@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Plataforma AVA Acadêmica 1.1",
+  "description": "Ambiente Virtual de Aprendizagem com portais para alunos, professores e administradores.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
