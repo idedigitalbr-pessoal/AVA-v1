@@ -30,11 +30,18 @@ export interface User {
 export interface Student extends User {
   role: 'ALUNO';
   registrationNumber: string; // RA/Matrícula
+  cpf?: string;
+  status?: 'ACTIVE' | 'INACTIVE' | 'BLOCKED';
+  lastAccessAt?: string;
 }
 
 export interface Teacher extends User {
   role: 'PROFESSOR';
   specialization?: string;
+  department?: string;
+  area?: string;
+  status?: 'ACTIVE' | 'INACTIVE' | 'BLOCKED';
+  lastAccessAt?: string;
 }
 
 export type CourseStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
@@ -224,6 +231,21 @@ export interface QuestionOption {
   isCorrect: boolean;
 }
 
+export interface Assessment {
+  id: string;
+  title: string;
+  type: 'ASSIGNMENT' | 'QUIZ' | 'EXAM';
+  description?: string;
+  courseId?: string;
+  subjectId?: string;
+  classId?: string;
+  teacherId?: string;
+  dueDate?: string;
+  maxScore: number;
+  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  createdAt?: string;
+}
+
 export interface QuizAttempt {
   id: string;
   quizId: string;
@@ -275,13 +297,26 @@ export interface Notification {
   type: 'INFO' | 'WARNING' | 'SUCCESS';
 }
 
+export interface CertificateTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  courseId?: string; // If undefined, applies to all courses, or maybe we just want general templates
+  backgroundUrl?: string; // URL for the background image
+  htmlContent?: string; // HTML template with placeholders
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Certificate {
   id: string;
   studentId: string;
   courseId: string;
+  templateId?: string;
   issueDate: string;
   code: string;
   url: string;
+  status: 'ISSUED' | 'REVOKED' | 'EXPIRED';
 }
 
 export interface DashboardStats {

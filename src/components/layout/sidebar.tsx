@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { 
   LayoutDashboard, Book, GraduationCap, Users, UserCircle, 
   Settings, LogOut, Bell, FileText, ClipboardList, Calendar, X,
-  TrendingUp, HelpCircle, FolderSync, DollarSign, Laptop
+  TrendingUp, HelpCircle, FolderSync, DollarSign, Laptop, Award
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 import { Permission } from "@/types";
@@ -61,6 +61,8 @@ const getLinks = (role: SidebarRole): SidebarLink[] => {
         { href: "/admin/turmas", label: "Turmas", icon: Users, permission: 'MANAGE_COURSES' },
         { href: "/admin/disciplinas", label: "Disciplinas", icon: Book, permission: 'MANAGE_COURSES' },
         { href: "/admin/matriculas", label: "Matrículas", icon: Book, permission: 'MANAGE_COURSES' },
+        { href: "/admin/avaliacoes/atividades", label: "Avaliações", icon: ClipboardList, permission: 'CREATE_CONTENT' },
+        { href: "/admin/certificados", label: "Certificados", icon: Award, permission: 'MANAGE_COURSES' },
         { href: "/admin/relatorios", label: "Relatórios", icon: FileText, permission: 'VIEW_ADMIN_DASHBOARD' },
         { href: "/admin/configuracoes", label: "Configurações", icon: Settings, permission: 'MANAGE_SYSTEM' },
       ];

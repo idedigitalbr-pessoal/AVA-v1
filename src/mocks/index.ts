@@ -1,4 +1,4 @@
-import { User, Student, Teacher, Course, Subject, Class, ClassSubject, Enrollment, AvaModule, Lesson, LessonMaterial, LessonProgress, Assignment, AssignmentSubmission, Quiz, Question, QuestionOption, QuizAttempt, Activity, Grade, AttendanceRecord, Notification, Certificate, DashboardStats } from '@/types';
+import { User, Student, Teacher, Course, Subject, Class, ClassSubject, Enrollment, AvaModule, Lesson, LessonMaterial, LessonProgress, Assignment, AssignmentSubmission, Quiz, Question, QuestionOption, QuizAttempt, Activity, Grade, AttendanceRecord, Notification, Certificate, DashboardStats, Assessment } from '@/types';
 
 // USERS
 export const mockUsers: User[] = [
@@ -7,17 +7,17 @@ export const mockUsers: User[] = [
 ];
 
 export const mockTeachers: Teacher[] = [
-  { id: 't1', name: 'Prof. Carlos Mendes', email: 'carlos@ava.edu.br', role: 'PROFESSOR', specialization: 'Engenharia de Software', createdAt: '2025-02-01', updatedAt: '2026-05-01' },
-  { id: 't2', name: 'Prof. Julia Rocha', email: 'julia@ava.edu.br', role: 'PROFESSOR', specialization: 'Design e UX', createdAt: '2025-02-15', updatedAt: '2026-05-01' },
-  { id: 't3', name: 'Prof. Roberto Nogueira', email: 'roberto@ava.edu.br', role: 'PROFESSOR', specialization: 'Banco de Dados', createdAt: '2025-03-01', updatedAt: '2026-05-01' },
+  { id: 't1', name: 'Prof. Carlos Mendes', email: 'carlos@ava.edu.br', role: 'PROFESSOR', specialization: 'Engenharia de Software', department: 'Tecnologia', area: 'Ciências Exatas', status: 'ACTIVE', lastAccessAt: '2026-05-16T12:00:00Z', createdAt: '2025-02-01', updatedAt: '2026-05-01' },
+  { id: 't2', name: 'Prof. Julia Rocha', email: 'julia@ava.edu.br', role: 'PROFESSOR', specialization: 'Design e UX', department: 'Artes', area: 'Design', status: 'ACTIVE', lastAccessAt: '2026-05-15T09:30:00Z', createdAt: '2025-02-15', updatedAt: '2026-05-01' },
+  { id: 't3', name: 'Prof. Roberto Nogueira', email: 'roberto@ava.edu.br', role: 'PROFESSOR', specialization: 'Banco de Dados', department: 'Tecnologia', area: 'Ciências da Computação', status: 'INACTIVE', lastAccessAt: '2026-04-20T14:10:00Z', createdAt: '2025-03-01', updatedAt: '2026-05-01' },
 ];
 
 export const mockStudents: Student[] = [
-  { id: 's1', name: 'Ana Souza', email: 'ana@ava.edu.br', role: 'ALUNO', registrationNumber: '2026001', avatarUrl: 'https://i.pravatar.cc/150?u=s1', createdAt: '2025-03-01', updatedAt: '2026-05-01' },
-  { id: 's2', name: 'Bruno Mendes', email: 'bruno@ava.edu.br', role: 'ALUNO', registrationNumber: '2026002', avatarUrl: 'https://i.pravatar.cc/150?u=s2', createdAt: '2025-03-02', updatedAt: '2026-05-01' },
-  { id: 's3', name: 'Carla Dias', email: 'carla@ava.edu.br', role: 'ALUNO', registrationNumber: '2026003', avatarUrl: 'https://i.pravatar.cc/150?u=s3', createdAt: '2025-03-03', updatedAt: '2026-05-01' },
-  { id: 's4', name: 'Daniel Costa', email: 'daniel@ava.edu.br', role: 'ALUNO', registrationNumber: '2026004', avatarUrl: 'https://i.pravatar.cc/150?u=s4', createdAt: '2025-03-04', updatedAt: '2026-05-01' },
-  { id: 's5', name: 'Eduarda Lima', email: 'eduarda@ava.edu.br', role: 'ALUNO', registrationNumber: '2026005', avatarUrl: 'https://i.pravatar.cc/150?u=s5', createdAt: '2025-03-05', updatedAt: '2026-05-01' },
+  { id: 's1', name: 'Ana Souza', email: 'ana@ava.edu.br', role: 'ALUNO', registrationNumber: '2026001', cpf: '111.111.111-11', status: 'ACTIVE', lastAccessAt: '2026-05-16T10:00:00Z', avatarUrl: 'https://i.pravatar.cc/150?u=s1', createdAt: '2025-03-01', updatedAt: '2026-05-01' },
+  { id: 's2', name: 'Bruno Mendes', email: 'bruno@ava.edu.br', role: 'ALUNO', registrationNumber: '2026002', cpf: '222.222.222-22', status: 'ACTIVE', lastAccessAt: '2026-05-15T08:30:00Z', avatarUrl: 'https://i.pravatar.cc/150?u=s2', createdAt: '2025-03-02', updatedAt: '2026-05-01' },
+  { id: 's3', name: 'Carla Dias', email: 'carla@ava.edu.br', role: 'ALUNO', registrationNumber: '2026003', cpf: '333.333.333-33', status: 'INACTIVE', lastAccessAt: '2026-04-10T14:20:00Z', avatarUrl: 'https://i.pravatar.cc/150?u=s3', createdAt: '2025-03-03', updatedAt: '2026-05-01' },
+  { id: 's4', name: 'Daniel Costa', email: 'daniel@ava.edu.br', role: 'ALUNO', registrationNumber: '2026004', cpf: '444.444.444-44', status: 'BLOCKED', lastAccessAt: '2026-05-01T09:15:00Z', avatarUrl: 'https://i.pravatar.cc/150?u=s4', createdAt: '2025-03-04', updatedAt: '2026-05-01' },
+  { id: 's5', name: 'Eduarda Lima', email: 'eduarda@ava.edu.br', role: 'ALUNO', registrationNumber: '2026005', cpf: '555.555.555-55', status: 'ACTIVE', lastAccessAt: '2026-05-16T12:45:00Z', avatarUrl: 'https://i.pravatar.cc/150?u=s5', createdAt: '2025-03-05', updatedAt: '2026-05-01' },
 ];
 
 export const allMockUsers: User[] = [...mockUsers, ...mockTeachers, ...mockStudents];
@@ -101,6 +101,13 @@ export const mockActivities: Activity[] = [
   { id: 'a4', title: 'Fórum Temático', type: 'ASSIGNMENT', courseId: 'c1', courseName: 'Engenharia de Software', status: 'GRADED', score: 8.5, maxScore: 10 },
 ];
 
+// ASSESSMENTS
+export const mockAssessments: Assessment[] = [
+  { id: 'asm1', title: 'Prova de Lógica Básica', type: 'EXAM', description: 'Prova do 1º Bimestre', courseId: 'c1', classId: 'class1', subjectId: 'sub1', teacherId: 't1', maxScore: 10, status: 'PUBLISHED', dueDate: '2026-05-20T23:59:00Z', createdAt: '2026-05-01T10:00:00Z' },
+  { id: 'asm2', title: 'Trabalho de Interface', type: 'ASSIGNMENT', description: 'Criar wireframes básicos', courseId: 'c2', classId: 'class2', subjectId: 'sub3', teacherId: 't2', maxScore: 10, status: 'PUBLISHED', dueDate: '2026-05-25T23:59:00Z', createdAt: '2026-05-02T10:00:00Z' },
+  { id: 'asm3', title: 'Quiz de Redes', type: 'QUIZ', description: 'Avaliação rápida sobre OSI', courseId: 'c4', classId: 'class3', subjectId: 'sub6', teacherId: 't1', maxScore: 5, status: 'DRAFT', createdAt: '2026-05-10T10:00:00Z' },
+];
+
 // GRADES
 export const mockGrades: Grade[] = [
   { id: 'g1', studentId: 's1', classSubjectId: 'cs1', type: 'P1', value: 8.5, date: '2026-04-10' },
@@ -127,6 +134,18 @@ export const mockNotifications: Notification[] = [
   { id: 'n1', userId: 's1', title: 'Nova nota disponível', message: 'Sua nota na disciplina Lógica de Programação foi publicada.', date: '2026-05-15T10:00:00Z', read: false, type: 'SUCCESS' },
   { id: 'n2', userId: 's1', title: 'Atividade próxima do prazo', message: 'O Quiz: Lógica Básica vence em 5 dias.', date: '2026-05-14T15:30:00Z', read: false, type: 'WARNING' },
   { id: 'n3', userId: 's1', title: 'Nova aula liberada', message: 'A aula Operadores Matemáticos já está disponível.', date: '2026-05-10T08:00:00Z', read: true, type: 'INFO' },
+];
+
+// CERTIFICATES
+export const mockCertificateTemplates: import('@/types').CertificateTemplate[] = [
+  { id: 'tpl1', name: 'Template Padrão Graduação', description: 'Template clássico para conclusão de curso de graduação.', createdAt: '2025-10-01T10:00:00Z', updatedAt: '2025-10-01T10:00:00Z' },
+  { id: 'tpl2', name: 'Template Extensão', description: 'Template para cursos livres e de extensão.', createdAt: '2025-11-01T10:00:00Z', updatedAt: '2025-11-01T10:00:00Z' }
+];
+
+export const mockCertificates: import('@/types').Certificate[] = [
+  { id: 'cert1', studentId: 's1', courseId: 'c2', templateId: 'tpl1', issueDate: '2026-05-15', code: 'CERT-1234-ABCD', url: 'https://exemplo.com/cert/1234', status: 'ISSUED' },
+  { id: 'cert2', studentId: 's2', courseId: 'c1', templateId: 'tpl2', issueDate: '2025-12-10', code: 'CERT-5678-EFGH', url: 'https://exemplo.com/cert/5678', status: 'REVOKED' },
+  { id: 'cert3', studentId: 's3', courseId: 'c3', templateId: 'tpl1', issueDate: '2024-01-20', code: 'CERT-9012-IJKL', url: 'https://exemplo.com/cert/9012', status: 'EXPIRED' }
 ];
 
 // DASHBOARD STATS

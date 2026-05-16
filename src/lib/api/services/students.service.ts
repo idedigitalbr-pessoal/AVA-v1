@@ -1,31 +1,57 @@
 import { apiClient } from '../client';
 import { endpoints } from '../endpoints';
-import { User, Enrollment } from '@/types';
-import { allMockUsers, mockEnrollments } from '@/mocks';
+import { User, Student, Enrollment } from '@/types';
+import { allMockUsers, mockStudents, mockEnrollments } from '@/mocks';
 
 export const studentsService = {
-  list: async (): Promise<User[]> => {
-    await apiClient.get(endpoints.students.base);
-    return allMockUsers.filter(u => u.role === 'ALUNO');
+  list: async (): Promise<Student[]> => {
+    // await apiClient.get(endpoints.students.base);
+    return mockStudents;
   },
   
-  create: async (data: any): Promise<User> => {
-    await apiClient.post(endpoints.students.base, data);
-    return { ...allMockUsers[0], id: Math.random().toString(), ...data } as User;
+  create: async (data: any): Promise<Student> => {
+    // await apiClient.post(endpoints.students.base, data);
+    return { ...mockStudents[0], id: Math.random().toString(), ...data } as Student;
   },
 
-  getAll: async (): Promise<User[]> => {
-    await apiClient.get(endpoints.students.base);
-    return allMockUsers.filter(u => u.role === 'ALUNO');
+  getAll: async (): Promise<Student[]> => {
+    // await apiClient.get(endpoints.students.base);
+    return mockStudents;
   },
 
-  getById: async (id: string): Promise<User | undefined> => {
-    await apiClient.get(endpoints.students.byId(id));
-    return allMockUsers.find(u => u.id === id && u.role === 'ALUNO');
+  getById: async (id: string): Promise<Student | undefined> => {
+    // await apiClient.get(endpoints.students.byId(id));
+    return mockStudents.find(u => u.id === id);
+  },
+
+  update: async (id: string, data: Partial<Student>): Promise<Student> => {
+    // await apiClient.put(endpoints.students.byId(id), data);
+    const stud = mockStudents.find(u => u.id === id);
+    return { ...stud, ...data } as Student;
+  },
+
+  blockAccess: async (id: string): Promise<Student> => {
+    const stud = mockStudents.find(u => u.id === id);
+    return { ...stud, status: 'BLOCKED' } as Student;
+  },
+
+  activeAccess: async (id: string): Promise<Student> => {
+    const stud = mockStudents.find(u => u.id === id);
+    return { ...stud, status: 'ACTIVE' } as Student;
+  },
+
+  resetPassword: async (id: string): Promise<boolean> => {
+    return true; // sucesso
+  },
+
+  sendNotification: async (id: string, subject: string, message: string): Promise<boolean> => {
+    return true; // sucesso
   },
 
   getEnrollments: async (id: string): Promise<Enrollment[]> => {
-    await apiClient.get(endpoints.students.enrollments(id));
+    // await apiClient.get(endpoints.students.enrollments(id));
+    // For 'all' param workaround mentioned earlier
+    if (id === 'all') return mockEnrollments;
     return mockEnrollments.filter(e => e.userId === id);
   }
 };

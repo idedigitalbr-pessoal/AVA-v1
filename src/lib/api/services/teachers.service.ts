@@ -1,21 +1,56 @@
 import { apiClient } from '../client';
 import { endpoints } from '../endpoints';
-import { User, Course } from '@/types';
-import { allMockUsers, mockCourses } from '@/mocks';
+import { User, Teacher, Course, Subject, Class } from '@/types';
+import { mockTeachers, mockCourses, mockSubjects, mockClasses, mockClassSubjects } from '@/mocks';
 
 export const teachersService = {
-  getAll: async (): Promise<User[]> => {
-    await apiClient.get(endpoints.teachers.base);
-    return allMockUsers.filter(u => u.role === 'PROFESSOR');
+  list: async (): Promise<Teacher[]> => {
+    return mockTeachers;
   },
 
-  getById: async (id: string): Promise<User | undefined> => {
-    await apiClient.get(endpoints.teachers.byId(id));
-    return allMockUsers.find(u => u.id === id && u.role === 'PROFESSOR');
+  create: async (data: any): Promise<Teacher> => {
+    return { ...mockTeachers[0], id: Math.random().toString(), ...data } as Teacher;
+  },
+
+  getAll: async (): Promise<Teacher[]> => {
+    return mockTeachers;
+  },
+
+  getById: async (id: string): Promise<Teacher | undefined> => {
+    return mockTeachers.find(u => u.id === id);
+  },
+
+  update: async (id: string, data: Partial<Teacher>): Promise<Teacher> => {
+    const teacher = mockTeachers.find(u => u.id === id);
+    return { ...teacher, ...data } as Teacher;
+  },
+
+  blockAccess: async (id: string): Promise<Teacher> => {
+    const teacher = mockTeachers.find(u => u.id === id);
+    return { ...teacher, status: 'BLOCKED' } as Teacher;
+  },
+
+  activeAccess: async (id: string): Promise<Teacher> => {
+    const teacher = mockTeachers.find(u => u.id === id);
+    return { ...teacher, status: 'ACTIVE' } as Teacher;
+  },
+
+  resetPassword: async (id: string): Promise<boolean> => {
+    return true; // sucesso
   },
 
   getClasses: async (id: string): Promise<Course[]> => {
-    await apiClient.get(endpoints.teachers.classes(id));
+    // legacy, returns courses the teacher is instructor of.
     return mockCourses.filter(c => c.instructorId === id);
+  },
+
+  getSubjects: async (id: string): Promise<Subject[]> => {
+    return mockSubjects.filter(sub => sub.linkedTeachers?.some(t => t.id === id));
+  },
+
+  getClassesTurmas: async (id: string): Promise<Class[]> => {
+    // returns actual "Turmas" (Classes) the teacher is linked to via ClassSubjects
+    const classIds = mockClassSubjects.filter(cs => cs.teacherId === id).map(cs => cs.classId);
+    return mockClasses.filter(c => classIds.includes(c.id));
   }
 };
