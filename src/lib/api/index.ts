@@ -101,4 +101,5 @@ export * from './services/assignments.service';
 export * from './services/quizzes.service';
 export * from './services/grades.service';
 export * from './services/notifications.service';
+export * from './services/enrollments.service';
 

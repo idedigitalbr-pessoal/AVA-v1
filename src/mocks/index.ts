@@ -32,12 +32,12 @@ export const mockCourses: Course[] = [
 
 // SUBJECTS
 export const mockSubjects: Subject[] = [
-  { id: 'sub1', name: 'Lógica de Programação', code: 'LP001', description: 'Introdução aos algoritmos.', courseId: 'c1', workload: 60 },
-  { id: 'sub2', name: 'Estrutura de Dados', code: 'ED002', description: 'Listas, pilhas, filas e árvores.', courseId: 'c1', workload: 80 },
-  { id: 'sub3', name: 'Interface Humano Computador', code: 'IHC003', description: 'Usabilidade e design.', courseId: 'c2', workload: 60 },
-  { id: 'sub4', name: 'Identidade Visual', code: 'IV004', description: 'Criação de marcas.', courseId: 'c2', workload: 40 },
-  { id: 'sub5', name: 'Banco de Dados', code: 'BD005', description: 'Modelagem relacional.', courseId: 'c3', workload: 80 },
-  { id: 'sub6', name: 'Redes de Computadores', code: 'RC006', description: 'Protocolos e arquitetura web.', courseId: 'c4', workload: 60 },
+  { id: 'sub1', name: 'Lógica de Programação', code: 'LP001', description: 'Introdução aos algoritmos.', courseId: 'c1', workload: 60, area: 'Ciências Exatas', status: 'ACTIVE', linkedCourses: [{id: 'c1', name: 'Engenharia de Software'}], linkedTeachers: [{id: 't1', name: 'Prof. Carlos Mendes'}] },
+  { id: 'sub2', name: 'Estrutura de Dados', code: 'ED002', description: 'Listas, pilhas, filas e árvores.', courseId: 'c1', workload: 80, area: 'Ciências Exatas', status: 'ACTIVE', linkedCourses: [{id: 'c1', name: 'Engenharia de Software'}], linkedTeachers: [{id: 't1', name: 'Prof. Carlos Mendes'}] },
+  { id: 'sub3', name: 'Interface Humano Computador', code: 'IHC003', description: 'Usabilidade e design.', courseId: 'c2', workload: 60, area: 'Design', status: 'ACTIVE', linkedCourses: [{id: 'c2', name: 'Design Gráfico'}], linkedTeachers: [{id: 't2', name: 'Prof. Julia Rocha'}] },
+  { id: 'sub4', name: 'Identidade Visual', code: 'IV004', description: 'Criação de marcas.', courseId: 'c2', workload: 40, area: 'Design', status: 'ACTIVE', linkedCourses: [{id: 'c2', name: 'Design Gráfico'}], linkedTeachers: [{id: 't2', name: 'Prof. Julia Rocha'}] },
+  { id: 'sub5', name: 'Banco de Dados', code: 'BD005', description: 'Modelagem relacional.', courseId: 'c3', workload: 80, area: 'Tecnologia da Informação', status: 'ACTIVE', linkedCourses: [{id: 'c3', name: 'Sistemas de Informação'}], linkedTeachers: [{id: 't3', name: 'Prof. Roberto Nogueira'}] },
+  { id: 'sub6', name: 'Redes de Computadores', code: 'RC006', description: 'Protocolos e arquitetura web.', courseId: 'c4', workload: 60, area: 'Tecnologia da Informação', status: 'ARCHIVED', linkedCourses: [{id: 'c4', name: 'Ciência da Computação'}], linkedTeachers: [{id: 't1', name: 'Prof. Carlos Mendes'}] },
 ];
 
 // CLASSES (Turmas)
@@ -56,11 +56,11 @@ export const mockClassSubjects: ClassSubject[] = [
 
 // ENROLLMENTS
 export const mockEnrollments: Enrollment[] = [
-  { id: 'e1', userId: 's1', courseId: 'c1', classId: 'class1', progress: 45, status: 'ACTIVE', enrolledAt: '2026-02-15' },
-  { id: 'e2', userId: 's2', courseId: 'c1', classId: 'class1', progress: 12, status: 'ACTIVE', enrolledAt: '2026-02-15' },
-  { id: 'e3', userId: 's3', courseId: 'c2', classId: 'class2', progress: 100, status: 'COMPLETED', enrolledAt: '2025-08-01' },
-  { id: 'e4', userId: 's4', courseId: 'c3', classId: 'class3', progress: 30, status: 'ACTIVE', enrolledAt: '2026-03-01' },
-  { id: 'e5', userId: 's5', courseId: 'c1', classId: 'class1', progress: 80, status: 'ACTIVE', enrolledAt: '2026-02-15' },
+  { id: 'e1', userId: 's1', courseId: 'c1', classId: 'class1', progress: 45, status: 'CONFIRMED', academicSituation: 'Cursando', enrolledAt: '2026-02-15' },
+  { id: 'e2', userId: 's2', courseId: 'c1', classId: 'class1', progress: 12, status: 'PENDING', academicSituation: 'Aguardando Pagamento', enrolledAt: '2026-02-15' },
+  { id: 'e3', userId: 's3', courseId: 'c2', classId: 'class2', progress: 100, status: 'COMPLETED', academicSituation: 'Formado', enrolledAt: '2025-08-01' },
+  { id: 'e4', userId: 's4', courseId: 'c3', classId: 'class3', progress: 30, status: 'LOCKED', academicSituation: 'Trancado Pelo Aluno', enrolledAt: '2026-03-01' },
+  { id: 'e5', userId: 's5', courseId: 'c1', classId: 'class1', progress: 80, status: 'CANCELED', academicSituation: 'Evasão', enrolledAt: '2026-02-15' },
 ];
 
 // AVA MODULES

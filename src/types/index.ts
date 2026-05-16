@@ -86,6 +86,17 @@ export interface Subject {
   description?: string;
   courseId: string; // Course/Curso that this subject belongs to
   workload: number; // Carga horária
+  area?: string;
+  status?: 'ACTIVE' | 'ARCHIVED' | 'DRAFT';
+  syllabus?: string;
+  objectives?: string;
+  programmaticContent?: string;
+  methodology?: string;
+  evaluationCriteria?: string;
+  basicBibliography?: string;
+  complementaryBibliography?: string;
+  linkedCourses?: { id: string; name: string }[];
+  linkedTeachers?: { id: string; name: string }[];
 }
 
 export interface Class {
@@ -113,7 +124,8 @@ export interface Enrollment {
   courseId: string;
   classId?: string;
   progress: number;
-  status: 'ACTIVE' | 'COMPLETED' | 'DROPPED';
+  status: 'PENDING' | 'CONFIRMED' | 'LOCKED' | 'CANCELED' | 'COMPLETED';
+  academicSituation?: string;
   enrolledAt: string;
 }
 

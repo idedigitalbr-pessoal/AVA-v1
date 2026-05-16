@@ -21,10 +21,17 @@ const classFormSchema = z.object({
   academicYear: z.string().min(4, "Ano letivo (ex: 2026/1)"),
   startDate: z.string().min(1, "Data de início é obrigatória"),
   endDate: z.string().min(1, "Data de fim é obrigatória"),
-  status: z.enum(['ACTIVE', 'ARCHIVED', 'FINISHED']).default('ACTIVE'),
+  status: z.enum(['ACTIVE', 'ARCHIVED', 'FINISHED']),
 });
 
-type ClassFormValues = z.infer<typeof classFormSchema>;
+interface ClassFormValues {
+  name: string;
+  courseId: string;
+  academicYear: string;
+  startDate: string;
+  endDate: string;
+  status: 'ACTIVE' | 'ARCHIVED' | 'FINISHED';
+}
 
 interface AdminClassFormProps {
   isEdit: boolean;
@@ -36,7 +43,7 @@ export function AdminClassForm({ isEdit, classId }: AdminClassFormProps) {
   const { data: courses, isLoading: isCoursesLoading } = useCourses();
   const [loading, setLoading] = useState(isEdit);
 
-  const form = useForm<ClassFormValues>({
+  const form = useForm<any>({
     resolver: zodResolver(classFormSchema),
     defaultValues: {
       name: "",
@@ -44,7 +51,7 @@ export function AdminClassForm({ isEdit, classId }: AdminClassFormProps) {
       academicYear: "",
       startDate: "",
       endDate: "",
-      status: 'ACTIVE'
+      status: 'ACTIVE' as ClassFormValues['status']
     },
   });
 
@@ -77,7 +84,7 @@ export function AdminClassForm({ isEdit, classId }: AdminClassFormProps) {
     }
   }, [isEdit, classId, form, router]);
 
-  const onSubmit = async (data: ClassFormValues) => {
+  const onSubmit = async (data: any) => {
     try {
       if (isEdit && classId) {
         await classesService.updateClass(classId, data);

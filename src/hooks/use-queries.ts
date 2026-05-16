@@ -41,3 +41,10 @@ export function useClasses() {
     queryFn: () => classesService.getAll(),
   });
 }
+
+export function useEnrollments() {
+  return useQuery({
+    queryKey: ["enrollments"],
+    queryFn: () => import("@/lib/api").then(m => m.enrollmentService.listEnrollments()),
+  });
+}
