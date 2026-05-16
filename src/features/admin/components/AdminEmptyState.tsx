@@ -1,5 +1,6 @@
-import { EmptyState, EmptyStateProps } from "@/components/ui/empty-state";
+import { EmptyState } from "@/components/ui/empty-state";
+import React from "react";
 
-export function AdminEmptyState(props: EmptyStateProps) {
+export function AdminEmptyState(props: React.ComponentProps<typeof EmptyState>) {
   return <EmptyState {...props} />;
 }

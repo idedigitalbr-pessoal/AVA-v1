@@ -37,14 +37,27 @@ export interface Teacher extends User {
   specialization?: string;
 }
 
+export type CourseStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+export type CourseModality = 'ONLINE' | 'PRESENCIAL' | 'HIBRIDO';
+export type CourseDegree = 'LIVRE' | 'EXTENSAO' | 'GRADUACAO' | 'POS_GRADUACAO' | 'CERTIFICACAO';
+
 export interface Course {
   id: string;
   title: string;
+  code?: string; // e.g. "CC-101"
   description: string;
   thumbnailUrl?: string;
-  instructorId: string;
+  instructorId: string; // Pode ser listado como coordinatorId
+  modality?: CourseModality;
+  degree?: CourseDegree;
+  workload?: number;
+  coordinatorId?: string;
+  status?: CourseStatus;
   totalModules: number;
   totalStudents: number;
+  totalClasses?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Subject {
