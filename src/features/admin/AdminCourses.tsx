@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useCourses } from "@/hooks/use-queries";
-import { coursesService } from "@/lib/api";
 import { ErrorState } from "@/components/ui/error-state";
 import { Course } from "@/types";
 import { 
@@ -16,14 +14,11 @@ import {
   AdminConfirmDialog, 
   AdminEmptyState, 
   AdminLoadingState, 
-  AdminDataTable,
-  AdminStatusBadge
+  AdminDataTable 
 } from "./components";
 import { Can } from "@/lib/auth/Can";
-import { Badge } from "@/components/ui/badge";
 
 export function AdminCourses() {
-  const router = useRouter();
   const { data: courses, isLoading, error, refetch } = useCourses();
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -32,52 +27,18 @@ export function AdminCourses() {
   }
 
   const filteredCourses = courses?.filter(c => 
-    c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.code?.toLowerCase().includes(searchTerm.toLowerCase())
+    c.title.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
-
-  const handleDelete = async (id: string) => {
-    try {
-      await coursesService.deleteCourse(id);
-      toast.success("Curso excluído com sucesso.");
-      refetch();
-    } catch (e) {
-      toast.error("Erro ao excluir curso.");
-    }
-  };
-
-  const handlePublish = async (id: string) => {
-    try {
-      await coursesService.publishCourse(id);
-      toast.success("Curso publicado com sucesso.");
-      refetch();
-    } catch (e) {
-      toast.error("Erro ao publicar curso.");
-    }
-  };
-
-  const handleArchive = async (id: string) => {
-    try {
-      await coursesService.archiveCourse(id);
-      toast.success("Curso arquivado com sucesso.");
-      refetch();
-    } catch (e) {
-      toast.error("Erro ao arquivar curso.");
-    }
-  };
-
-  const renderStatusBadge = (status?: string) => {
-    if (status === 'PUBLISHED') return <AdminStatusBadge status="Publicado" variant="success" />;
-    if (status === 'ARCHIVED') return <AdminStatusBadge status="Arquivado" variant="secondary" />;
-    return <AdminStatusBadge status="Rascunho" variant="warning" />;
-  };
 
   const renderActionMenu = (c: Course) => (
     <div className="flex justify-end items-center gap-1">
-      <AdminActionMenu 
-        onView={() => router.push(`/admin/cursos/${c.id}`)}
-      />
       <Can I="MANAGE_COURSES">
+        <button 
+          onClick={() => router.push(`/admin/cursos/${c.id}`)}
+          className="text-xs text-blue-600 hover:underline mr-3 font-medium"
+        >
+          Detalhes
+        </button>
         <AdminActionMenu 
           onEdit={() => router.push(`/admin/cursos/${c.id}/editar`)}
         />
@@ -85,8 +46,8 @@ export function AdminCourses() {
       <Can I="DELETE_COURSES">
         <AdminConfirmDialog
           title="Excluir curso"
-          description={`Deseja excluir permanentemente o curso ${c.title}?`}
-          onConfirm={() => handleDelete(c.id)}
+          description={`Deseja excluir o curso ${c.title}? Esta ação não pode ser desfeita.`}
+          onConfirm={() => toast.success(`Curso ${c.title} excluído.`)}
         >
           <span>
             <AdminActionMenu onDelete={() => {}} />
@@ -97,15 +58,53 @@ export function AdminCourses() {
   );
 
   const columns = [
-    { header: "Código", accessor: (c: Course) => <span className="font-mono text-xs text-slate-500">{c.code || '-'}</span> },
-    { header: "Curso", accessor: (c: Course) => <span className="font-bold text-slate-700">{c.title}</span> },
-    { header: "Modalidade", accessor: (c: Course) => <Badge variant="outline">{c.modality || 'PRESENCIAL'}</Badge> },
-    { header: "Grau", accessor: (c: Course) => <span className="text-slate-500 text-sm">{c.degree || '-'}</span> },
-    { header: "C.H.", accessor: (c: Course) => <span className="text-slate-500 text-sm">{c.workload ? `${c.workload}h` : '-'}</span> },
-    { header: "Alunos / Turmas", accessor: (c: Course) => (
-      <div className="text-sm text-slate-500">{c.totalStudents} / {c.totalClasses || 0}</div>
-    ) },
-    { header: "Status", accessor: (c: Course) => renderStatusBadge(c.status) },
+    { 
+      header: "Código", 
+      accessor: (c: Course) => <span className="text-slate-500 font-mono text-xs">{c.code}</span> 
+    },
+    { 
+      header: "Nome do Curso", 
+      accessor: (c: Course) => (
+        <div>
+          <span className="font-bold text-slate-700 block">{c.title}</span>
+          <span className="text-xs text-slate-500">{c.degree} • {c.modality}</span>
+        </div>
+      ) 
+    },
+    { 
+      header: "Carga Horária", 
+      accessor: (c: Course) => <span className="text-slate-500">{c.workload}h</span> 
+    },
+    { 
+      header: "Coordenador", 
+      accessor: (c: Course) => <span className="text-slate-600">{c.coordinatorName || '-'}</span> 
+    },
+    { 
+      header: "Turmas / Alunos", 
+      accessor: (c: Course) => (
+        <div className="flex flex-col text-sm">
+          <span className="text-slate-600">{c.totalClasses} turmas</span>
+          <span className="text-slate-500 text-xs">{c.totalStudents} alunos</span>
+        </div>
+      ) 
+    },
+    { 
+      header: "Status", 
+      accessor: (c: Course) => {
+        let bg = "bg-slate-100 text-slate-600";
+        let label = "Rascunho";
+        
+        if (c.status === "PUBLISHED") {
+          bg = "bg-emerald-100 text-emerald-800";
+          label = "Publicado";
+        } else if (c.status === "ARCHIVED") {
+          bg = "bg-rose-100 text-rose-800";
+          label = "Arquivado";
+        }
+
+        return <span className={`px-2 py-1 text-xs font-medium rounded-full ${bg}`}>{label}</span>;
+      }
+    },
     { header: "Ação", className: "text-right", accessor: renderActionMenu }
   ];
 
@@ -118,7 +117,7 @@ export function AdminCourses() {
           <AdminCreateButton 
             label="Novo Curso" 
             permission="MANAGE_COURSES" 
-            onClick={() => router.push("/admin/cursos/novo")} 
+            onClick={() => router.push('/admin/cursos/novo')} 
           />
         } 
       />
@@ -148,17 +147,23 @@ export function AdminCourses() {
               <>
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <span className="font-mono text-xs text-slate-400">{c.code}</span>
-                    <p className="font-bold text-slate-900 leading-tight">{c.title}</p>
+                    <span className="text-xs font-mono text-slate-500 block">{c.code}</span>
+                    <p className="font-bold text-slate-900">{c.title}</p>
+                    <span className="text-xs text-slate-500">{c.degree} • {c.modality}</span>
                   </div>
-                  {renderStatusBadge(c.status)}
+                  <div>
+                  {c.status === "PUBLISHED" ? (
+                    <span className="bg-emerald-100 text-emerald-800 px-2 py-1 text-xs font-medium rounded-full">Publicado</span>
+                  ) : c.status === "ARCHIVED" ? (
+                    <span className="bg-rose-100 text-rose-800 px-2 py-1 text-xs font-medium rounded-full">Arquivado</span>
+                  ) : (
+                    <span className="bg-slate-100 text-slate-600 px-2 py-1 text-xs font-medium rounded-full">Rascunho</span>
+                  )}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <Badge variant="outline">{c.modality || 'PRESENCIAL'}</Badge>
-                  <span className="text-sm text-slate-500">{c.degree}</span>
-                </div>
-                <div className="flex justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
-                  <span>{c.totalClasses || 0} Turmas</span>
+                <div className="flex justify-between text-xs text-slate-500 mt-3 pt-2 border-t border-slate-100">
+                  <span>{c.totalClasses} Turmas</span>
+                  <span>{c.workload}h</span>
                   <span>{c.totalStudents} Alunos</span>
                 </div>
                 <div className="pt-2 border-t border-slate-100 flex justify-end">

@@ -38,26 +38,25 @@ export interface Teacher extends User {
 }
 
 export type CourseStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
-export type CourseModality = 'ONLINE' | 'PRESENCIAL' | 'HIBRIDO';
-export type CourseDegree = 'LIVRE' | 'EXTENSAO' | 'GRADUACAO' | 'POS_GRADUACAO' | 'CERTIFICACAO';
+export type CourseModality = 'PRESENCIAL' | 'EAD' | 'HIBRIDO';
+export type CourseDegree = 'GRADUACAO' | 'POS_GRADUACAO' | 'LATO_SENSU' | 'STRICTO_SENSU' | 'EXTENSAO' | 'TECNICO' | 'LIVRE';
 
 export interface Course {
   id: string;
   title: string;
-  code?: string; // e.g. "CC-101"
   description: string;
+  code: string;
+  status: CourseStatus;
+  modality: CourseModality;
+  degree: CourseDegree;
+  workload: number; // carga horária em horas
+  coordinatorId?: string; // coordenador do curso
+  coordinatorName?: string;
   thumbnailUrl?: string;
-  instructorId: string; // Pode ser listado como coordinatorId
-  modality?: CourseModality;
-  degree?: CourseDegree;
-  workload?: number;
-  coordinatorId?: string;
-  status?: CourseStatus;
+  instructorId: string; // pode ser o owner ou fallback
   totalModules: number;
   totalStudents: number;
-  totalClasses?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  totalClasses: number;
 }
 
 export interface Subject {

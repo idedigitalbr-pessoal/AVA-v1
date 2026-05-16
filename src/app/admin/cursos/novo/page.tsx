@@ -1,14 +1,5 @@
-import { AdminPageHeader } from "@/features/admin/components";
-import { CourseForm } from "@/features/admin/courses";
+import { AdminCourseForm } from "@/features/admin/AdminCourseForm";
 
-export default function NovoCursoPage() {
-  return (
-    <div className="space-y-6">
-      <AdminPageHeader 
-        title="Novo Curso" 
-        description="Preencha as informações para criar um novo curso." 
-      />
-      <CourseForm />
-    </div>
-  );
+export default function AdminNovoCursoPage() {
+  return <AdminCourseForm />;
 }

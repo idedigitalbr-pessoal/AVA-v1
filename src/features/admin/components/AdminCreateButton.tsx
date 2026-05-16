@@ -1,7 +1,7 @@
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Can } from "@/lib/auth/Can";
-import type { Permission } from "@/types";
+import type { Permission } from "@/lib/auth/permissions";
 
 interface AdminCreateButtonProps {
   onClick: () => void;

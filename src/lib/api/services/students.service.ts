@@ -1,34 +1,31 @@
 import { apiClient } from '../client';
 import { endpoints } from '../endpoints';
-import { Student, Enrollment } from '@/types';
-import { mockStudents, mockEnrollments } from '@/mocks';
+import { User, Enrollment } from '@/types';
+import { allMockUsers, mockEnrollments } from '@/mocks';
 
 export const studentsService = {
-  list: async (): Promise<Student[]> => {
-    // await apiClient.get(endpoints.students.base);
-    return mockStudents;
+  list: async (): Promise<User[]> => {
+    await apiClient.get(endpoints.students.base);
+    return allMockUsers.filter(u => u.role === 'ALUNO');
   },
   
-  create: async (data: any): Promise<Student> => {
-    // await apiClient.post(endpoints.students.base, data);
-    return { ...mockStudents[0], id: Math.random().toString(), ...data } as Student;
+  create: async (data: any): Promise<User> => {
+    await apiClient.post(endpoints.students.base, data);
+    return { ...allMockUsers[0], id: Math.random().toString(), ...data } as User;
   },
 
-  getAll: async (): Promise<Student[]> => {
-    // await apiClient.get(endpoints.students.base);
-    return mockStudents;
+  getAll: async (): Promise<User[]> => {
+    await apiClient.get(endpoints.students.base);
+    return allMockUsers.filter(u => u.role === 'ALUNO');
   },
 
-  getById: async (id: string): Promise<Student | undefined> => {
-    // await apiClient.get(endpoints.students.byId(id));
-    return mockStudents.find(u => u.id === id);
+  getById: async (id: string): Promise<User | undefined> => {
+    await apiClient.get(endpoints.students.byId(id));
+    return allMockUsers.find(u => u.id === id && u.role === 'ALUNO');
   },
 
   getEnrollments: async (id: string): Promise<Enrollment[]> => {
-    if (id === 'all') {
-       return mockEnrollments;
-    }
-    // await apiClient.get(endpoints.students.enrollments(id));
+    await apiClient.get(endpoints.students.enrollments(id));
     return mockEnrollments.filter(e => e.userId === id);
   }
 };
