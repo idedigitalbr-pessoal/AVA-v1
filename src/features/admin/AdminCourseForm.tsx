@@ -25,7 +25,7 @@ const courseSchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
   modality: z.enum(["PRESENCIAL", "EAD", "HIBRIDO"]),
   degree: z.enum(["GRADUACAO", "POS_GRADUACAO", "LATO_SENSU", "STRICTO_SENSU", "EXTENSAO", "TECNICO", "LIVRE"]),
-  workload: z.coerce.number().min(1, "A carga horária deve ser maior que zero"),
+  workload: z.number().min(1, "A carga horária deve ser maior que zero"),
   coordinatorName: z.string().optional(),
 });
 
@@ -198,7 +198,14 @@ export function AdminCourseForm({ courseId }: AdminCourseFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Carga Horária (horas)</FormLabel>
-                    <FormControl><Input type="number" placeholder="Ex: 3200" {...field} /></FormControl>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="Ex: 3200" 
+                        {...field} 
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : 0)} 
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

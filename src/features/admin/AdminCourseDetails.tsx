@@ -116,8 +116,15 @@ export function AdminCourseDetails({ courseId }: AdminCourseDetailsProps) {
                   <CardTitle className="capitalize">{tab.replace('curriculum', 'Matriz Curricular').replace('classes', 'Turmas').replace('students', 'Alunos').replace('teachers', 'Professores').replace('content', 'Conteúdo AVA').replace('assessments', 'Avaliações').replace('certificates', 'Certificados').replace('reports', 'Relatórios').replace('settings', 'Configurações')}</CardTitle>
                   <CardDescription>Gerencie informações relacionadas a esta seção.</CardDescription>
                 </CardHeader>
-                <CardContent className="h-64 flex items-center justify-center border-t border-slate-100 bg-slate-50/50">
-                  <p className="text-slate-500">Conteúdo da aba em desenvolvimento.</p>
+                <CardContent className="h-64 flex flex-col items-center justify-center border-t border-slate-100 bg-slate-50/50">
+                  {tab === "content" ? (
+                    <>
+                      <p className="text-slate-500 mb-4">Gerencie os módulos, aulas e materiais deste curso em uma interface dedicada.</p>
+                      <Button onClick={() => router.push(`/admin/cursos/${courseId}/conteudo`)}>Acessar Gerenciador de Conteúdo</Button>
+                    </>
+                  ) : (
+                    <p className="text-slate-500">Conteúdo da aba em desenvolvimento.</p>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

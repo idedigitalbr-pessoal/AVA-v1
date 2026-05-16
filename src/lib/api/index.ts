@@ -39,7 +39,7 @@ export const ApiService = {
       return allCourses.filter(c => enrolledCourseIds.includes(c.id));
     },
     getById: async (id: string) => {
-      return coursesService.getById(id);
+      return coursesService.getCourseById(id);
     }
   },
   enrollments: {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useCourses } from "@/hooks/use-queries";
 import { ErrorState } from "@/components/ui/error-state";
 import { Course } from "@/types";
@@ -19,6 +20,7 @@ import {
 import { Can } from "@/lib/auth/Can";
 
 export function AdminCourses() {
+  const router = useRouter();
   const { data: courses, isLoading, error, refetch } = useCourses();
   const [searchTerm, setSearchTerm] = useState("");
 

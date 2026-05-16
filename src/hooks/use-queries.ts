@@ -4,14 +4,20 @@ import { studentsService, teachersService, coursesService, subjectsService, clas
 export function useStudents() {
   return useQuery({
     queryKey: ["students"],
-    queryFn: () => studentsService.getAll(),
+    queryFn: async () => {
+      const data = await studentsService.getAll();
+      return data as import("@/types").Student[];
+    },
   });
 }
 
 export function useTeachers() {
   return useQuery({
     queryKey: ["teachers"],
-    queryFn: () => teachersService.getAll(),
+    queryFn: async () => {
+      const data = await teachersService.getAll();
+      return data as import("@/types").Teacher[];
+    },
   });
 }
 

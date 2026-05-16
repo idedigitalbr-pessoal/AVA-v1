@@ -117,6 +117,10 @@ export interface Lesson {
   order: number;
   completed: boolean;
   attachments?: { name: string; url: string }[];
+  isMandatory?: boolean;
+  isPublished?: boolean;
+  releaseDate?: string;
+  materials?: LessonMaterial[];
 }
 
 export interface LessonMaterial {
