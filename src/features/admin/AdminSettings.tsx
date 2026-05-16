@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Save } from "lucide-react";
+import { toast } from "sonner";
 
 export function AdminSettings() {
   return (
@@ -44,21 +45,21 @@ export function AdminSettings() {
              <CardDescription>Ative ou desative funcionalidades globais do AVA.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-             <div className="flex items-center justify-between">
+             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                    <h4 className="text-sm font-bold text-slate-900">Matrículas Abertas</h4>
                    <p className="text-sm text-slate-500">Permite que alunos se candidatem a novos cursos publicamente.</p>
                 </div>
                 <Switch defaultChecked />
              </div>
-             <div className="flex items-center justify-between border-t border-slate-100 pt-6">
+             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-t border-slate-100 pt-6 gap-4">
                 <div>
                    <h4 className="text-sm font-bold text-slate-900">Emissão Automática de Certificados</h4>
                    <p className="text-sm text-slate-500">Gera certificado ao aluno concluir todos os módulos de um curso.</p>
                 </div>
                 <Switch defaultChecked />
              </div>
-             <div className="flex items-center justify-between border-t border-slate-100 pt-6">
+             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-t border-slate-100 pt-6 gap-4">
                 <div>
                    <h4 className="text-sm font-bold text-slate-900">Modo de Avaliação Estrita</h4>
                    <p className="text-sm text-slate-500">Impede que alunos avancem nos módulos sem nota mínima.</p>
@@ -69,7 +70,7 @@ export function AdminSettings() {
         </Card>
 
         <div className="flex justify-end pt-4">
-           <Button className="bg-indigo-600 hover:bg-indigo-700">
+           <Button className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto" onClick={() => toast.success("Configurações salvas.")}>
               <Save className="mr-2 h-4 w-4" /> Salvar Configurações
            </Button>
         </div>

@@ -1,93 +1,112 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, PlusCircle, Edit2, Trash2 } from "lucide-react";
-import { subjectsService } from "@/lib/api";
-import { ConfirmDeleteModal } from "@/components/ui/confirm-delete-modal";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useSubjects } from "@/hooks/use-queries";
+import { ErrorState } from "@/components/ui/error-state";
 import { Subject } from "@/types";
+import { 
+  AdminPageHeader, 
+  AdminSearchInput, 
+  AdminCreateButton, 
+  AdminFilterBar, 
+  AdminActionMenu, 
+  AdminConfirmDialog, 
+  AdminEmptyState, 
+  AdminLoadingState, 
+  AdminDataTable 
+} from "./components";
 
 export function AdminSubjects() {
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: subjects, isLoading, error, refetch } = useSubjects();
+  const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const data = await subjectsService.getAll();
-        setSubjects(data);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
+  if (error) {
+    return <ErrorState onRetry={() => refetch()} error={error as Error} />
+  }
+
+  const filteredSubjects = subjects?.filter(s => 
+    s.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.name.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
+  const renderActionMenu = (subject: Subject) => (
+    <div className="flex justify-end items-center gap-1">
+      <AdminActionMenu 
+        onEdit={() => toast.success(`Editar disciplina ${subject.name}`)}
+      />
+      <AdminConfirmDialog
+        title="Excluir disciplina"
+        description={`Deseja excluir a disciplina ${subject.name}?`}
+        onConfirm={() => toast.success(`Disciplina ${subject.name} excluída.`)}
+      >
+        <span>
+          <AdminActionMenu onDelete={() => {}} />
+        </span>
+      </AdminConfirmDialog>
+    </div>
+  );
+
+  const columns = [
+    { header: "Código", accessor: (s: Subject) => <span className="font-bold text-slate-700">{s.code}</span> },
+    { header: "Nome", accessor: (s: Subject) => <span className="font-medium text-slate-900">{s.name}</span> },
+    { header: "Carga Horária", accessor: (s: Subject) => <span className="text-slate-500">{s.workload}h</span> },
+    { header: "Descrição", accessor: (s: Subject) => <span className="text-slate-500 max-w-xs truncate block">{s.description || 'N/A'}</span> },
+    { header: "Ação", className: "text-right", accessor: renderActionMenu }
+  ];
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Disciplinas</h1>
-          <p className="text-slate-500 text-sm mt-1">Gerencie o catálogo de disciplinas.</p>
-        </div>
-        <Button className="bg-indigo-600 hover:bg-indigo-700">
-          <PlusCircle className="mr-2 h-4 w-4" /> Nova Disciplina
-        </Button>
-      </div>
+      <AdminPageHeader 
+        title="Disciplinas" 
+        description="Gerencie o catálogo de disciplinas." 
+        action={
+          <AdminCreateButton 
+            label="Nova Disciplina" 
+            onClick={() => toast.success("Iniciando cadastro...")} 
+          />
+        } 
+      />
 
       <div className="bg-white p-4 rounded-xl border border-slate-200">
-        <div className="relative w-full sm:max-w-sm mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input placeholder="Buscar por código ou nome..." className="pl-9" />
-        </div>
+        <AdminFilterBar>
+          <AdminSearchInput 
+            value={searchTerm} 
+            onChange={setSearchTerm} 
+            placeholder="Buscar por código ou nome..." 
+          />
+        </AdminFilterBar>
 
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead>Código</TableHead>
-                <TableHead>Nome</TableHead>
-                <TableHead>Carga Horária</TableHead>
-                <TableHead>Descrição</TableHead>
-                <TableHead className="text-right">Ação</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-slate-500 py-4">Carregando...</TableCell>
-                </TableRow>
-              ) : subjects.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-slate-500 py-4">Nenhuma disciplina encontrada</TableCell>
-                </TableRow>
-              ) : subjects.map((subject) => (
-                <TableRow key={subject.id}>
-                  <TableCell className="font-bold text-slate-700">{subject.code}</TableCell>
-                  <TableCell className="font-medium text-slate-900">{subject.name}</TableCell>
-                  <TableCell className="text-slate-500">{subject.workload}h</TableCell>
-                  <TableCell className="text-slate-500">{subject.description || 'N/A'}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="text-slate-400 hover:text-indigo-600">
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                    <ConfirmDeleteModal 
-                       onConfirm={() => console.log('Apagar disciplina', subject.id)}
-                       title="Excluir disciplina"
-                       description={`Deseja excluir a disciplina ${subject.name}?`}
-                    >
-                      <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-600">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </ConfirmDeleteModal>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        {isLoading ? (
+          <AdminLoadingState text="Carregando disciplinas..." />
+        ) : filteredSubjects.length === 0 ? (
+          <AdminEmptyState 
+            title="Nenhuma disciplina encontrada"
+            description="Você ainda não cadastrou nenhuma disciplina ou a busca não retornou resultados."
+          />
+        ) : (
+          <AdminDataTable 
+            data={filteredSubjects}
+            columns={columns}
+            keyExtractor={(s) => s.id}
+            renderMobileCard={(s) => (
+              <>
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <p className="font-bold text-slate-900">{s.code} - {s.name}</p>
+                    <p className="text-sm text-slate-500 line-clamp-2 mt-1">{s.description || 'N/A'}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 text-xs text-slate-500 pt-2 border-t border-slate-100">
+                  <span className="flex items-center">Carga Horária: {s.workload}h</span>
+                </div>
+                <div className="pt-2 border-t border-slate-100 flex justify-end">
+                  {renderActionMenu(s)}
+                </div>
+              </>
+            )}
+          />
+        )}
       </div>
     </div>
   );

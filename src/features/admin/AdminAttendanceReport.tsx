@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Download, Search, Filter } from "lucide-react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export function AdminAttendanceReport() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -52,60 +54,65 @@ export function AdminAttendanceReport() {
            <Button variant="outline" className="w-full sm:w-auto text-slate-600">
                <Filter className="mr-2 h-4 w-4" /> Filtros
            </Button>
-           <Button className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700">
+           <Button className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700" onClick={() => toast.success("Download do relatório CSV iniciado.")}>
                <Download className="mr-2 h-4 w-4" /> Exportar CSV
            </Button>
         </div>
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-        <Table>
-          <TableHeader className="bg-slate-50">
-             <TableRow>
-                <TableHead>Aluno</TableHead>
-                <TableHead>Curso / Disciplina</TableHead>
-                <TableHead className="text-center">Aulas (Dadas)</TableHead>
-                <TableHead className="text-center">Faltas</TableHead>
-                <TableHead className="text-center">% Frequência</TableHead>
-                <TableHead>Situação</TableHead>
-             </TableRow>
-          </TableHeader>
-          <TableBody>
-             {filteredData.map((d) => (
-               <TableRow key={d.id}>
-                 <TableCell className="font-medium text-slate-900">{d.name}</TableCell>
-                 <TableCell>
-                    <div className="text-sm font-semibold text-slate-700">{d.subject}</div>
-                    <div className="text-xs text-slate-500">{d.course}</div>
-                 </TableCell>
-                 <TableCell className="text-center font-medium text-slate-700">{d.totalClasses}</TableCell>
-                 <TableCell className="text-center font-medium text-red-600">{d.absences}</TableCell>
-                 <TableCell className="text-center">
-                    <span className={`text-lg font-bold ${
-                       d.attendanceRate >= 75 ? 'text-emerald-600' : 'text-red-600'
-                    }`}>
-                       {d.attendanceRate}%
-                    </span>
-                 </TableCell>
-                 <TableCell>
-                    <Badge variant="outline" className={
-                      d.attendanceRate >= 75 ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : 
-                      'text-red-600 border-red-200 bg-red-50'
-                    }>
-                       {d.attendanceRate >= 75 ? 'Regular' : 'Risco de Reprovação'}
-                    </Badge>
-                 </TableCell>
-               </TableRow>
-             ))}
-             {filteredData.length === 0 && (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-slate-50">
                <TableRow>
-                 <TableCell colSpan={6} className="text-center py-8 text-slate-500">
-                   Nenhum resultado encontrado.
-                 </TableCell>
+                  <TableHead>Aluno</TableHead>
+                  <TableHead>Curso / Disciplina</TableHead>
+                  <TableHead className="text-center">Aulas (Dadas)</TableHead>
+                  <TableHead className="text-center">Faltas</TableHead>
+                  <TableHead className="text-center">% Frequência</TableHead>
+                  <TableHead>Situação</TableHead>
                </TableRow>
-             )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+               {filteredData.map((d) => (
+                 <TableRow key={d.id}>
+                   <TableCell className="font-medium text-slate-900">{d.name}</TableCell>
+                   <TableCell>
+                      <div className="text-sm font-semibold text-slate-700">{d.subject}</div>
+                      <div className="text-xs text-slate-500">{d.course}</div>
+                   </TableCell>
+                   <TableCell className="text-center font-medium text-slate-700">{d.totalClasses}</TableCell>
+                   <TableCell className="text-center font-medium text-red-600">{d.absences}</TableCell>
+                   <TableCell className="text-center">
+                      <span className={`text-lg font-bold ${
+                         d.attendanceRate >= 75 ? 'text-emerald-600' : 'text-red-600'
+                      }`}>
+                         {d.attendanceRate}%
+                      </span>
+                   </TableCell>
+                   <TableCell>
+                      <Badge variant="outline" className={
+                        d.attendanceRate >= 75 ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : 
+                        'text-red-600 border-red-200 bg-red-50'
+                      }>
+                         {d.attendanceRate >= 75 ? 'Regular' : 'Risco de Reprovação'}
+                      </Badge>
+                   </TableCell>
+                 </TableRow>
+               ))}
+               {filteredData.length === 0 && (
+                 <TableRow>
+                   <TableCell colSpan={6} className="text-center py-8">
+                     <EmptyState 
+                       title="Nenhum resultado encontrado" 
+                       description="Tente ajustar os filtros de busca para encontrar o aluno ou disciplina."
+                     />
+                   </TableCell>
+                 </TableRow>
+               )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

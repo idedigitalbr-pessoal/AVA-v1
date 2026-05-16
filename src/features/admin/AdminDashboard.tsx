@@ -19,12 +19,12 @@ export function AdminDashboard({ stats }: AdminDashboardProps) {
   return (
     <div className="space-y-6">
       {/* Welcome */}
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-6 sm:p-8 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-lg shadow-slate-200/50">
-        <div className="mb-4 sm:mb-0">
+      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-6 sm:p-8 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-lg shadow-slate-200/50 gap-4">
+        <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Visão Geral - Administração</h1>
           <p className="text-slate-300 mt-2">Acompanhe as métricas e gerencie a plataforma com facilidade.</p>
         </div>
-        <Button className="bg-white text-slate-900 hover:bg-slate-100 shadow-sm font-medium">Novo Cadastro</Button>
+        <Button className="bg-white text-slate-900 hover:bg-slate-100 shadow-sm font-medium w-full sm:w-auto">Novo Cadastro</Button>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -75,30 +75,32 @@ export function AdminDashboard({ stats }: AdminDashboardProps) {
               <CardTitle>Últimos Cadastros</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Perfil</TableHead>
-                    <TableHead>Criado em</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {mockRecentUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">{user.name}</TableCell>
-                      <TableCell>{user.role}</TableCell>
-                      <TableCell>{user.date}</TableCell>
-                      <TableCell>
-                        <Badge variant={user.status === 'Ativo' ? 'success' : 'warning'}>
-                          {user.status}
-                        </Badge>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader className="bg-slate-50">
+                    <TableRow>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Perfil</TableHead>
+                      <TableHead>Criado em</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {mockRecentUsers.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell className="font-medium">{user.name}</TableCell>
+                        <TableCell>{user.role}</TableCell>
+                        <TableCell>{user.date}</TableCell>
+                        <TableCell>
+                          <Badge variant={user.status === 'Ativo' ? 'success' : 'warning'}>
+                            {user.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </div>

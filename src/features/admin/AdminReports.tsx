@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Users, BookOpen, Activity, TrendingUp } from "lucide-react";
+import { toast } from "sonner";
 import Link from "next/link";
 
 export function AdminReports() {
@@ -34,13 +35,13 @@ export function AdminReports() {
                   <CardDescription className="mt-1">{report.description}</CardDescription>
                 </div>
               </CardHeader>
-              <CardContent className="pt-4 flex gap-3">
+              <CardContent className="pt-4 flex flex-col sm:flex-row gap-3">
                  <Link href={report.href} className="w-full">
                     <Button variant="outline" className="w-full">
                        Visualizar
                     </Button>
                  </Link>
-                 <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
+                 <Button className="w-full bg-indigo-600 hover:bg-indigo-700" onClick={() => toast.success("Download iniciado.")}>
                     <Download className="mr-2 h-4 w-4" /> CSV
                  </Button>
               </CardContent>
