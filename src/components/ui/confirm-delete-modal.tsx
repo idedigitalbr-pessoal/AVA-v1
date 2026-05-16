@@ -29,10 +29,12 @@ export function ConfirmDeleteModal({
 }: ConfirmDeleteModalProps) {
   return (
     <AlertDialog>
-      {React.isValidElement(children) ? (
+      {React.isValidElement(children) && children.type === 'button' ? (
         <AlertDialogTrigger render={children as React.ReactElement} />
+      ) : React.isValidElement(children) ? (
+        <AlertDialogTrigger render={children as React.ReactElement} nativeButton={false} />
       ) : (
-        <AlertDialogTrigger>
+        <AlertDialogTrigger nativeButton={false}>
           {children}
         </AlertDialogTrigger>
       )}
