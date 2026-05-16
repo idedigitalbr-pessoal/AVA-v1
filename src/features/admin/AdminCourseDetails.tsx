@@ -122,6 +122,11 @@ export function AdminCourseDetails({ courseId }: AdminCourseDetailsProps) {
                       <p className="text-slate-500 mb-4">Gerencie os módulos, aulas e materiais deste curso em uma interface dedicada.</p>
                       <Button onClick={() => router.push(`/admin/cursos/${courseId}/conteudo`)}>Acessar Gerenciador de Conteúdo</Button>
                     </>
+                  ) : tab === "curriculum" ? (
+                    <>
+                      <p className="text-slate-500 mb-4">Estruture os períodos, disciplinas e carga horária da matriz curricular.</p>
+                      <Button onClick={() => router.push(`/admin/cursos/${courseId}/matriz-curricular`)}>Acessar Matriz Curricular</Button>
+                    </>
                   ) : (
                     <p className="text-slate-500">Conteúdo da aba em desenvolvimento.</p>
                   )}

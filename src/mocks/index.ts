@@ -42,9 +42,9 @@ export const mockSubjects: Subject[] = [
 
 // CLASSES (Turmas)
 export const mockClasses: Class[] = [
-  { id: 'class1', name: 'Turma A - 2026', courseId: 'c1', academicYear: '2026', startDate: '2026-02-01', endDate: '2026-12-15' },
-  { id: 'class2', name: 'Turma B - 2026', courseId: 'c2', academicYear: '2026', startDate: '2026-02-01', endDate: '2026-12-15' },
-  { id: 'class3', name: 'Turma C - 2026', courseId: 'c3', academicYear: '2026', startDate: '2026-02-01', endDate: '2026-12-15' },
+  { id: 'class1', name: 'Turma A - 2026', courseId: 'c1', academicYear: '2026', startDate: '2026-02-01', endDate: '2026-12-15', status: 'ACTIVE', studentsCount: 30, subjectsCount: 8 },
+  { id: 'class2', name: 'Turma B - 2026', courseId: 'c2', academicYear: '2026', startDate: '2026-02-01', endDate: '2026-12-15', status: 'ACTIVE', studentsCount: 25, subjectsCount: 6 },
+  { id: 'class3', name: 'Turma C - 2026', courseId: 'c3', academicYear: '2026', startDate: '2026-02-01', endDate: '2026-12-15', status: 'ACTIVE', studentsCount: 40, subjectsCount: 10 },
 ];
 
 export const mockClassSubjects: ClassSubject[] = [

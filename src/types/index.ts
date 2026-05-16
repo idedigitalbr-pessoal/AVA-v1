@@ -59,6 +59,26 @@ export interface Course {
   totalClasses: number;
 }
 
+export interface CurriculumPeriod {
+  id: string;
+  courseId: string;
+  name: string;
+  order: number;
+}
+
+export interface CurriculumSubject {
+  id: string;
+  courseId: string;
+  subjectId: string;
+  subjectName: string;
+  subjectCode: string;
+  periodId: string;
+  order: number;
+  workload: number;
+  isMandatory: boolean;
+  prerequisites: string[]; // array of CurriculumSubject IDs
+}
+
 export interface Subject {
   id: string;
   name: string;
@@ -75,6 +95,9 @@ export interface Class {
   academicYear: string;
   startDate: string;
   endDate: string;
+  status?: 'ACTIVE' | 'ARCHIVED' | 'FINISHED';
+  studentsCount?: number;
+  subjectsCount?: number;
 }
 
 export interface ClassSubject {
