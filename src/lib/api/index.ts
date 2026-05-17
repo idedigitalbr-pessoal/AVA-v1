@@ -104,4 +104,5 @@ export * from './services/certificates.service';
 export * from './services/grades.service';
 export * from './services/notifications.service';
 export * from './services/enrollments.service';
+export * from './services/reports.service';
 

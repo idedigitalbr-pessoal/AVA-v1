@@ -319,6 +319,19 @@ export interface Certificate {
   status: 'ISSUED' | 'REVOKED' | 'EXPIRED';
 }
 
+export interface Report {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  icon?: string;
+}
+
+export interface ReportResult {
+  headers: string[];
+  rows: any[][];
+}
+
 export interface DashboardStats {
   admin: {
     totalStudents: number;
