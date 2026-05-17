@@ -150,6 +150,33 @@ export interface TeacherCommunicationData {
   announcements: ClassAnnouncement[];
 }
 
+export type QuestionType = 'MULTIPLE_CHOICE' | 'TRUE_FALSE' | 'ESSAY';
+export type QuestionDifficulty = 'EASY' | 'MEDIUM' | 'HARD';
+export type QuestionStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+
+export interface TeacherBankQuestionOption {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+  feedback?: string;
+}
+
+export interface TeacherBankQuestion {
+  id: string;
+  subjectId: string;
+  subjectName?: string;
+  text: string;
+  type: QuestionType;
+  difficulty: QuestionDifficulty;
+  status: QuestionStatus;
+  tags: string[];
+  options?: TeacherBankQuestionOption[]; // For MULTIPLE_CHOICE
+  correctAnswer?: boolean; // For TRUE_FALSE
+  trueFalseFeedback?: string; // For TRUE_FALSE
+  expectedAnswer?: string; // For ESSAY
+  rubric?: string; // For ESSAY
+}
+
 export interface TeacherAttendanceData {
   classSubjectId: string;
   sessions: AttendanceSession[];
@@ -390,6 +417,90 @@ export interface QuestionOption {
   questionId: string;
   text: string;
   isCorrect: boolean;
+}
+
+export interface TeacherAssessment {
+  id: string;
+  classSubjectId: string;
+  title: string;
+  type: 'QUIZ' | 'EXAM';
+  description?: string;
+  dueDate?: string;
+  timeLimit?: number; // in minutes
+  maxAttempts?: number;
+  weight?: number;
+  maxScore: number;
+  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  shuffleQuestions?: boolean;
+  questionIds: string[];
+  createdAt?: string;
+}
+
+export interface TeacherClassStudent {
+  id: string; // enrollmentId or student userId
+  studentId: string;
+  name: string;
+  registration: string; // RA
+  email: string;
+  status: 'ACTIVE' | 'DROPPED';
+  riskStatus: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
+  contentProgress: number; // percentage
+  currentAverage: number;
+  attendancePct: number;
+  lastAccess?: string;
+  pendingActivitiesCount: number;
+}
+
+export interface TeacherClassStudentDetail extends TeacherClassStudent {
+  grades: { title: string; score: number; maxScore: number; date: string }[];
+  attendanceDates: { date: string; present: boolean }[];
+  activities: { title: string; status: 'PENDING' | 'SUBMITTED' | 'GRADED'; score?: number; maxScore: number; dueDate: string }[];
+  messages: { id: string; sender: 'TEACHER' | 'STUDENT'; text: string; date: string }[];
+  accessHistory: { date: string; action: string }[];
+}
+
+export interface TeacherClassPerformanceReport {
+  averageGrade: number;
+  highestGrade: number;
+  lowestGrade: number;
+  passingRate: number;
+  studentsCount: number;
+  gradeDistribution: { range: string; count: number }[];
+  recentAssessments: { title: string; average: number; maxScore: number; date: string }[];
+}
+
+export interface TeacherClassAttendanceReport {
+  averageAttendancePct: number;
+  perfectAttendanceCount: number;
+  lowAttendanceCount: number;
+  totalSessions: number;
+  attendanceByDate: { date: string; presentCount: number; absentCount: number }[];
+}
+
+export interface TeacherClassEngagementReport {
+  averageAccessPerWeek: number;
+  activeStudents: number;
+  inactiveStudents: number;
+  totalInteractions: number;
+  topActiveStudents: { name: string; accesses: number }[];
+}
+
+export interface TeacherAtRiskReport {
+  totalAtRisk: number;
+  highRisk: number;
+  mediumRisk: number;
+  lowRisk: number;
+  students: { id: string; name: string; registration: string; riskLevel: 'HIGH' | 'MEDIUM' | 'LOW'; reason: string }[];
+}
+
+export interface TeacherAssessmentAttempt {
+  id: string;
+  assessmentId: string;
+  studentId: string;
+  studentName: string;
+  startedAt: string;
+  completedAt?: string;
+  score?: number;
 }
 
 export interface Assessment {

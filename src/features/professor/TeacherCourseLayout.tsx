@@ -34,10 +34,9 @@ export function TeacherCourseLayout({ classSubject, children }: TeacherCourseLay
   const tabs = [
     { href: baseUrl, label: "Visão Geral", icon: LayoutDashboard, exact: true },
     { href: `${baseUrl}/conteudo`, label: "Conteúdo", icon: BookOpen },
-    { href: `${baseUrl}/atividades`, label: "Atividades", icon: ClipboardList },
-    { href: `${baseUrl}/quizzes`, label: "Provas & Quizzes", icon: FileQuestion },
+    { href: `${baseUrl}/atividades`, label: "Provas & Atividades", icon: ClipboardList },
     { href: `${baseUrl}/notas`, label: "Notas", icon: TrendingUp },
-    { href: `${baseUrl}/frequencia`, label: "Frequência", icon: UserCheck }, // using UserCheck for attendance
+    { href: `${baseUrl}/frequencia`, label: "Frequência", icon: UserCheck },
     { href: `${baseUrl}/alunos`, label: "Alunos", icon: Users },
     { href: `${baseUrl}/mensagens`, label: "Mensagens", icon: MessageSquare },
     { href: `${baseUrl}/relatorios`, label: "Relatórios", icon: BarChart },

@@ -1,5 +1,5 @@
-import { QuestionBankManager } from "@/features/quizzes/QuestionBankManager";
+import { TeacherQuestionBank } from "@/features/professor/TeacherQuestionBank";
 
 export default function QuestionBankPage() {
-  return <QuestionBankManager />;
+  return <TeacherQuestionBank />;
 }

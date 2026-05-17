@@ -113,6 +113,8 @@ export function AdminStudentForm({ isEdit, studentId }: AdminStudentFormProps) {
 
   if (loading) return <AdminLoadingState text="Carregando formulário..." />;
 
+  const currentCourse = form.watch('courseId');
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 mb-4">
@@ -230,7 +232,6 @@ export function AdminStudentForm({ isEdit, studentId }: AdminStudentFormProps) {
                   )} />
 
                   <FormField control={form.control} name="classId" render={({ field }) => {
-                    const currentCourse = form.watch('courseId');
                     const filteredClasses = classes?.filter(c => c.courseId === currentCourse);
                     
                     return (

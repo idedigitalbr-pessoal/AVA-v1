@@ -154,7 +154,7 @@ export const mockCertificates: import('@/types').Certificate[] = [
   { id: 'cert3', studentId: 's3', courseId: 'c3', templateId: 'tpl1', issueDate: '2024-01-20', code: 'CERT-9012-IJKL', url: 'https://exemplo.com/cert/9012', status: 'EXPIRED' }
 ];
 
-// DASHBOARD STATS
+export * from './teacher.mock';
 export const mockStats: DashboardStats = {
   admin: {
     totalStudents: 1254,
