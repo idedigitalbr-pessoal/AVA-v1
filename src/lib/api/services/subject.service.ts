@@ -5,12 +5,12 @@ import { mockSubjects } from '@/mocks';
 
 export const subjectsService = {
   getAll: async (): Promise<Subject[]> => {
-    // await apiClient.get(ENDPOINTS.subjects.base);
+    await apiClient.get(ENDPOINTS.SUBJECTS.BASE);
     return mockSubjects;
   },
 
   getById: async (id: string): Promise<Subject | undefined> => {
-    // await apiClient.get(ENDPOINTS.subjects.byId(id));
+    await apiClient.get(ENDPOINTS.SUBJECTS.BY_ID(id));
     return mockSubjects.find(c => c.id === id);
   },
 
@@ -23,6 +23,7 @@ export const subjectsService = {
   },
 
   createSubject: async (data: Partial<Subject>): Promise<Subject> => {
+    await apiClient.post(ENDPOINTS.SUBJECTS.BASE, data);
     const newSubject: Subject = {
       id: `sub-${Math.random()}`,
       name: data.name || '',
@@ -38,19 +39,20 @@ export const subjectsService = {
   },
 
   updateSubject: async (id: string, data: Partial<Subject>): Promise<Subject> => {
+    await apiClient.put(ENDPOINTS.SUBJECTS.BY_ID(id), data);
     const existing = mockSubjects.find(s => s.id === id) || mockSubjects[0];
     return { ...existing, ...data };
   },
 
   deleteSubject: async (id: string): Promise<void> => {
-    // await apiClient.delete(ENDPOINTS.subjects.byId(id));
+    await apiClient.delete(ENDPOINTS.SUBJECTS.BY_ID(id));
   },
 
   linkSubjectToCourse: async (subjectId: string, courseId: string): Promise<void> => {
-    // API Call
+    await apiClient.post(`${ENDPOINTS.SUBJECTS.BY_ID(subjectId)}/link-course`, { courseId });
   },
 
   linkTeacherToSubject: async (subjectId: string, teacherId: string): Promise<void> => {
-    // API Call
+    await apiClient.post(`${ENDPOINTS.SUBJECTS.BY_ID(subjectId)}/link-teacher`, { teacherId });
   }
 };

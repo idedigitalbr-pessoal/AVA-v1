@@ -61,6 +61,9 @@ export function AdminAssessmentsTable({ type, data, refetch }: AdminAssessmentsT
           <DropdownMenuItem onClick={() => toast.info(`Editar: ${a.title}`)}>
             <Edit className="mr-2 h-4 w-4" /> Editar Avaliação
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleAction(() => Promise.resolve(), "Avaliação duplicada com sucesso!")}>
+            <ListChecks className="mr-2 h-4 w-4" /> Duplicar Avaliação
+          </DropdownMenuItem>
           
           <DropdownMenuSeparator />
           

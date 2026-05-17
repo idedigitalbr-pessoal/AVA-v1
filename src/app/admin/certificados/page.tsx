@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import { AdminCertificatesDashboard } from '@/features/admin/certificates/AdminCertificatesDashboard';
 
-export default function CertificadosRedirect() {
-  redirect('/admin/certificados/emitidos');
+export default function CertificadosPage() {
+  return <AdminCertificatesDashboard />;
 }

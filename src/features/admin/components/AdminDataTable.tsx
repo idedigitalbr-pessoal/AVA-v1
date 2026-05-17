@@ -6,9 +6,20 @@ interface AdminDataTableProps<T> {
   data: T[];
   keyExtractor: (item: T) => string;
   renderMobileCard?: (item: T) => React.ReactNode;
+  emptyMessage?: React.ReactNode;
+  onEdit?: (item: T) => void;
+  onView?: (item: T) => void;
 }
 
-export function AdminDataTable<T>({ columns, data, keyExtractor, renderMobileCard }: AdminDataTableProps<T>) {
+export function AdminDataTable<T>({ columns, data, keyExtractor, renderMobileCard, emptyMessage }: AdminDataTableProps<T>) {
+  if (data.length === 0 && emptyMessage) {
+    return (
+      <div className="text-center p-8 bg-white border border-slate-200 border-dashed rounded-lg text-slate-500">
+        {emptyMessage}
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Mobile Render */}

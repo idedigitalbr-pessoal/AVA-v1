@@ -19,6 +19,7 @@ export const ENDPOINTS = {
   COURSES: {
     BASE: '/courses',
     BY_ID: (id: string) => `/courses/${id}`,
+    MODULES: (courseId: string) => `/courses/${courseId}/modules`,
   },
   SUBJECTS: {
     BASE: '/subjects',
@@ -39,10 +40,32 @@ export const ENDPOINTS = {
     MODULES: '/ava/modules',
     LESSONS: '/ava/lessons',
     CONTENT: '/ava/content',
+    LESSON_DETAIL: (id: string) => `/ava/lessons/${id}`,
   },
   ASSESSMENTS: {
     BASE: '/assessments',
     BY_ID: (id: string) => `/assessments/${id}`,
+  },
+  ASSIGNMENTS: {
+    BASE: '/assignments',
+    BY_ID: (id: string) => `/assignments/${id}`,
+    SUBMIT: (id: string) => `/assignments/${id}/submit`,
+  },
+  QUIZZES: {
+    BASE: '/quizzes',
+    BY_ID: (id: string) => `/quizzes/${id}`,
+    SUBMIT: (id: string) => `/quizzes/${id}/submit`,
+  },
+  GRADES: {
+    BASE: '/grades',
+    BY_ID: (id: string) => `/grades/${id}`,
+    STUDENT_GRADES: (studentId: string) => `/grades/students/${studentId}`,
+    CLASS_GRADES: (classId: string) => `/grades/classes/${classId}`,
+  },
+  NOTIFICATIONS: {
+    BASE: '/notifications',
+    BY_ID: (id: string) => `/notifications/${id}`,
+    MARK_AS_READ: (id: string) => `/notifications/${id}/read`,
   },
   REPORTS: {
     BASE: '/reports',
@@ -62,11 +85,4 @@ export const ENDPOINTS = {
   SETTINGS: {
     BASE: '/settings',
   },
-  // Legacy paths
-  ava: { modules: '', lessons: (id: string) => '', lessonDetail: (id: string) => '', content: '' },
-  courses: { base: '', byId: (id: string) => '', modules: (id: string) => '' },
-  assignments: { base: '', byId: (id: string) => '', submit: (id: string) => '' },
-  quizzes: { base: '', byId: (id: string) => '', submit: (id: string) => '' },
-  grades: { base: '', byId: (id: string) => '', studentGrades: (id: string) => '', classGrades: (id: string) => '' },
-  notifications: { base: '', byId: (id: string) => '', markAsRead: (id: string) => '' }
 };

@@ -13,14 +13,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AdminLoadingState } from "./components";
 
 const reportIcons: Record<string, any> = {
-  '1': Activity,
-  '2': Users,
-  '3': BookOpen,
-  '4': TrendingUp,
-  '5': TrendingUp,
-  '6': BarChart,
-  '7': FileText,
-  '8': FileBadge,
+  'performance': BookOpen,
+  'attendance': Users,
+  'engagement': Activity,
+  'enrollments': TrendingUp,
+  'certificates': FileBadge,
+  'teachers': Users,
+  'financial': BarChart,
 };
 
 export function AdminReports() {

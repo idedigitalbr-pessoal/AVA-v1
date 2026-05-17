@@ -113,37 +113,44 @@ export function AdminStudentDetails({ studentId }: AdminStudentDetailsProps) {
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <Tabs defaultValue="perfil" className="w-full">
+        <Tabs defaultValue="visaogeral" className="w-full">
           <div className="border-b border-slate-200 bg-slate-50/50 px-4">
             <TabsList className="bg-transparent h-12 w-full justify-start overflow-x-auto">
-              <TabsTrigger value="perfil" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Perfil</TabsTrigger>
+              <TabsTrigger value="visaogeral" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Visão Geral</TabsTrigger>
               <TabsTrigger value="matriculas" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Matrículas</TabsTrigger>
-              <TabsTrigger value="disciplinas" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Disciplinas</TabsTrigger>
-              <TabsTrigger value="ava" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Progresso AVA</TabsTrigger>
               <TabsTrigger value="notas" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Notas</TabsTrigger>
               <TabsTrigger value="frequencia" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Frequência</TabsTrigger>
               <TabsTrigger value="atividades" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Atividades</TabsTrigger>
-              <TabsTrigger value="financeiro" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Financeiro</TabsTrigger>
-              <TabsTrigger value="documentos" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Documentos</TabsTrigger>
               <TabsTrigger value="certificados" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Certificados</TabsTrigger>
-              <TabsTrigger value="atendimento" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Atendimento</TabsTrigger>
               <TabsTrigger value="historico" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Histórico</TabsTrigger>
+              <TabsTrigger value="comunicacao" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Comunicação</TabsTrigger>
             </TabsList>
           </div>
 
           <div className="p-6">
-            <TabsContent value="perfil" className="m-0 focus:outline-none">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 <div>
-                   <h3 className="text-sm font-semibold text-slate-900 mb-2">Dados Pessoais</h3>
+            <TabsContent value="visaogeral" className="m-0 focus:outline-none">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                   <h3 className="text-sm font-semibold text-slate-900 mb-3 border-b border-slate-200 pb-2">Dados Pessoais</h3>
                    <div className="space-y-2 text-sm text-slate-600">
                      <p><span className="font-medium text-slate-900">Nome:</span> {student.name}</p>
                      <p><span className="font-medium text-slate-900">E-mail:</span> {student.email}</p>
-                     <p><span className="font-medium text-slate-900">CPF:</span> {student.cpf}</p>
+                     <p><span className="font-medium text-slate-900">CPF:</span> {student.cpf || '-'}</p>
+                     <p><span className="font-medium text-slate-900">Telefone:</span> {student.phone || '-'}</p>
+                     <p><span className="font-medium text-slate-900">Data Nasc.:</span> {student.birthDate ? new Date(student.birthDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : '-'}</p>
+                     <p><span className="font-medium text-slate-900">Endereço:</span> {student.address || '-'}</p>
                    </div>
                  </div>
-                 <div>
-                   <h3 className="text-sm font-semibold text-slate-900 mb-2">Acesso</h3>
+                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                   <h3 className="text-sm font-semibold text-slate-900 mb-3 border-b border-slate-200 pb-2">Matrícula Atual</h3>
+                   <div className="space-y-2 text-sm text-slate-600">
+                     <p><span className="font-medium text-slate-900">RA:</span> {student.registrationNumber || '-'}</p>
+                     <p><span className="font-medium text-slate-900">Data de Ingresso:</span> {new Date(student.createdAt).toLocaleDateString('pt-BR')}</p>
+                     <p><span className="font-medium text-slate-900">Status:</span> {student.status === 'ACTIVE' ? 'Confirmada' : 'Pendente'}</p>
+                   </div>
+                 </div>
+                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                   <h3 className="text-sm font-semibold text-slate-900 mb-3 border-b border-slate-200 pb-2">Acesso e Sistema</h3>
                    <div className="space-y-2 text-sm text-slate-600">
                      <p><span className="font-medium text-slate-900">Último Login:</span> {student.lastAccessAt ? new Date(student.lastAccessAt).toLocaleString('pt-BR') : 'Nunca acessou'}</p>
                      <p><span className="font-medium text-slate-900">Data de Cadastro:</span> {new Date(student.createdAt).toLocaleDateString('pt-BR')}</p>
@@ -152,48 +159,49 @@ export function AdminStudentDetails({ studentId }: AdminStudentDetailsProps) {
               </div>
             </TabsContent>
 
-            <TabsContent value="matriculas" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Lista de vínculos a cursos. <Button variant="link" onClick={() => router.push('/admin/matriculas')}>Ver todas no menu Matrículas</Button></p>
+            <TabsContent value="matriculas" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Nenhuma matrícula complementar encontrada. <Button variant="link" onClick={() => router.push('/admin/matriculas')}>Ir para Matrículas</Button></p>
+              </div>
             </TabsContent>
 
-            <TabsContent value="disciplinas" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Histórico e situação por disciplina cursada ou em andamento.</p>
+            <TabsContent value="notas" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Nenhuma nota lançada no período vigente.</p>
+              </div>
             </TabsContent>
 
-            <TabsContent value="ava" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Detalhes de quais aulas e módulos o aluno assistiu no AVA.</p>
+            <TabsContent value="frequencia" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Nenhum registro de falta até o momento.</p>
+              </div>
             </TabsContent>
 
-            <TabsContent value="notas" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Boletim do aluno.</p>
+            <TabsContent value="atividades" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>O aluno não realizou nenhuma atividade recente no AVA.</p>
+              </div>
             </TabsContent>
 
-            <TabsContent value="frequencia" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Diário de classe e faltas computadas do aluno.</p>
+            <TabsContent value="certificados" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Aluno sem certificados emitidos.</p>
+              </div>
             </TabsContent>
 
-            <TabsContent value="atividades" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Prazos, entregas e notas em atividades do AVA.</p>
+             <TabsContent value="historico" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Histórico completo de auditoria e acesso.</p>
+              </div>
             </TabsContent>
 
-            <TabsContent value="financeiro" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Mensalidades, boletos, bolsas e adimplência.</p>
-            </TabsContent>
-
-            <TabsContent value="documentos" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>RG, CPF, Comprovante de Residência, Contrato assinado.</p>
-            </TabsContent>
-
-            <TabsContent value="certificados" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Emissão de histórico e certificados de conclusão.</p>
-            </TabsContent>
-
-            <TabsContent value="atendimento" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Chamados e tickets de suporte abertos pelo aluno.</p>
-            </TabsContent>
-
-             <TabsContent value="historico" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Histórico de auditoria, logins e IPs.</p>
+             <TabsContent value="comunicacao" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Histórico de notificações e e-mails enviados ao aluno.</p>
+                <Button variant="outline" className="mt-4" onClick={() => handleAction(() => studentsService.sendNotification(student.id, "Lembrete", "Mensagem padrao"), "Notificação de teste enviada.")}>
+                  <Mail className="w-4 h-4 mr-2" /> Enviar Nova Mensagem
+                </Button>
+              </div>
             </TabsContent>
 
           </div>

@@ -17,7 +17,13 @@ import { AdminLoadingState } from "../components";
 const teacherFormSchema = z.object({
   name: z.string().min(3, "Nome muito curto"),
   email: z.string().email("E-mail inválido"),
+  cpf: z.string().optional(),
+  phone: z.string().optional(),
+  birthDate: z.string().optional(),
   specialization: z.string().optional(),
+  degree: z.string().optional(),
+  institution: z.string().optional(),
+  lattes: z.string().optional(),
   department: z.string().optional(),
   area: z.string().optional(),
   status: z.enum(['ACTIVE', 'INACTIVE', 'BLOCKED']),
@@ -39,6 +45,12 @@ export function AdminTeacherForm({ isEdit, teacherId }: AdminTeacherFormProps) {
     defaultValues: {
       name: "",
       email: "",
+      cpf: "",
+      phone: "",
+      birthDate: "",
+      degree: "Mestrado",
+      institution: "",
+      lattes: "",
       specialization: "",
       department: "",
       area: "",
@@ -55,6 +67,12 @@ export function AdminTeacherForm({ isEdit, teacherId }: AdminTeacherFormProps) {
             form.reset({
               name: t.name,
               email: t.email,
+              cpf: (t as any).cpf || "",
+              phone: t.phone || "",
+              birthDate: t.birthDate || "",
+              degree: "Mestrado", // mocked, usually from t.degree
+              institution: "USP", // mocked
+              lattes: "http://lattes.cnpq.br/mock", // mocked
               specialization: t.specialization || "",
               department: t.department || "",
               area: t.area || "",
@@ -103,7 +121,11 @@ export function AdminTeacherForm({ isEdit, teacherId }: AdminTeacherFormProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-             
+              
+              <div className="md:col-span-2">
+                <h3 className="text-lg font-semibold text-slate-900 border-b pb-2 mb-4">Dados Pessoais</h3>
+              </div>
+
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem className="md:col-span-2">
                   <FormLabel>Nome Completo</FormLabel>
@@ -120,21 +142,65 @@ export function AdminTeacherForm({ isEdit, teacherId }: AdminTeacherFormProps) {
                 </FormItem>
               )} />
 
-              <FormField control={form.control} name="status" render={({ field }) => (
+              <FormField control={form.control} name="cpf" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>CPF</FormLabel>
+                  <FormControl><Input placeholder="000.000.000-00" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="phone" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Telefone</FormLabel>
+                  <FormControl><Input placeholder="(00) 00000-0000" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="birthDate" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Data de Nascimento</FormLabel>
+                  <FormControl><Input type="date" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <div className="md:col-span-2 mt-4">
+                <h3 className="text-lg font-semibold text-slate-900 border-b pb-2 mb-4">Formação e Atuação</h3>
+              </div>
+
+              <FormField control={form.control} name="degree" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Titulação Máxima</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o status" />
-                      </SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="ACTIVE">Ativo</SelectItem>
-                      <SelectItem value="INACTIVE">Inativo</SelectItem>
-                      <SelectItem value="BLOCKED">Bloqueado</SelectItem>
+                      <SelectItem value="Graduacao">Graduação</SelectItem>
+                      <SelectItem value="Especializacao">Especialização</SelectItem>
+                      <SelectItem value="Mestrado">Mestrado</SelectItem>
+                      <SelectItem value="Doutorado">Doutorado</SelectItem>
+                      <SelectItem value="Pos-Doutorado">Pós-Doutorado</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="institution" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Instituição de Formação</FormLabel>
+                  <FormControl><Input placeholder="Ex: USP, UNICAMP..." {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="lattes" render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel>Link Currículo Lattes</FormLabel>
+                  <FormControl><Input placeholder="http://lattes.cnpq.br/..." {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -157,8 +223,31 @@ export function AdminTeacherForm({ isEdit, teacherId }: AdminTeacherFormProps) {
 
               <FormField control={form.control} name="specialization" render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                  <FormLabel>Especialização</FormLabel>
+                  <FormLabel>Especialização Principal</FormLabel>
                   <FormControl><Input placeholder="Ex: Engenharia de Software" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <div className="md:col-span-2 mt-4">
+                <h3 className="text-lg font-semibold text-slate-900 border-b pb-2 mb-4">Acesso</h3>
+              </div>
+
+              <FormField control={form.control} name="status" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status no Sistema</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="ACTIVE">Ativo</SelectItem>
+                      <SelectItem value="INACTIVE">Inativo</SelectItem>
+                      <SelectItem value="BLOCKED">Bloqueado</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )} />

@@ -48,6 +48,9 @@ export interface User {
   email: string;
   role: Role;
   avatarUrl?: string;
+  phone?: string;
+  birthDate?: string;
+  address?: string;
   createdAt: string;
   updatedAt: string;
 }

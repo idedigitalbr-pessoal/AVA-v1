@@ -14,9 +14,10 @@ import { ModuleFormModal } from "./ModuleFormModal";
 
 interface AdminCourseContentManagerProps {
   courseId: string;
+  embedded?: boolean;
 }
 
-export function AdminCourseContentManager({ courseId }: AdminCourseContentManagerProps) {
+export function AdminCourseContentManager({ courseId, embedded }: AdminCourseContentManagerProps) {
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
@@ -25,6 +26,7 @@ export function AdminCourseContentManager({ courseId }: AdminCourseContentManage
   const [editingModule, setEditingModule] = useState<Module | undefined>();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchData();
   }, [courseId]);
 
@@ -109,23 +111,38 @@ export function AdminCourseContentManager({ courseId }: AdminCourseContentManage
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="outline" size="sm" onClick={() => router.push(`/admin/cursos/${courseId}`)}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Voltar para o Curso
-        </Button>
-      </div>
+      {!embedded && (
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="outline" size="sm" onClick={() => router.push(`/admin/cursos/${courseId}`)}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Voltar para o Curso
+          </Button>
+        </div>
+      )}
 
-      <AdminPageHeader 
-        title={`Conteúdo: ${course.title}`} 
-        description="Gerencie os módulos e aulas do curso."
-        action={
+      {!embedded ? (
+        <AdminPageHeader 
+          title={`Conteúdo: ${course.title}`} 
+          description="Gerencie os módulos e aulas do curso."
+          action={
+            <Button onClick={() => { setEditingModule(undefined); setIsModuleFormOpen(true); }}>
+              <Plus className="h-4 w-4 mr-2" />
+              Novo Módulo
+            </Button>
+          }
+        />
+      ) : (
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-medium">Conteúdo AVA</h3>
+            <p className="text-sm text-slate-500">Gerencie os módulos e aulas do curso.</p>
+          </div>
           <Button onClick={() => { setEditingModule(undefined); setIsModuleFormOpen(true); }}>
             <Plus className="h-4 w-4 mr-2" />
             Novo Módulo
           </Button>
-        }
-      />
+        </div>
+      )}
 
       <div className="space-y-4">
         {modules.length === 0 ? (

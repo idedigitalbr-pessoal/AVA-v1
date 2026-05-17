@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useTeachers } from "@/hooks/use-queries";
+import { useTeachers, useCourses, useSubjects, useClasses } from "@/hooks/use-queries";
 import { ErrorState } from "@/components/ui/error-state";
 import { Teacher } from "@/types";
 import { 
@@ -28,20 +28,42 @@ import { Button } from "@/components/ui/button";
 import { MoreVertical, Edit, Key, Eye, Ban, CheckCircle, Clock, BookOpen, Users } from "lucide-react";
 import { teachersService } from "@/lib/api";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 export function AdminTeachers() {
   const router = useRouter();
   const { data: teachers, isLoading, error, refetch } = useTeachers();
+  const { data: courses } = useCourses();
+  const { data: subjects } = useSubjects();
+  const { data: classes } = useClasses();
+
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [courseFilter, setCourseFilter] = useState("ALL");
+  const [subjectFilter, setSubjectFilter] = useState("ALL");
+  const [classFilter, setClassFilter] = useState("ALL");
 
   if (error) {
     return <ErrorState onRetry={() => refetch()} error={error as Error} />
   }
 
-  const filteredTeachers = teachers?.filter(t => 
-    t.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    t.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    t.area?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredTeachers = teachers?.filter(t => {
+    const matchesSearch = t.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+          t.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          t.area?.toLowerCase().includes(searchTerm.toLowerCase());
+          
+    const matchesStatus = statusFilter === "ALL" || t.status === statusFilter;
+    
+    // Simplificado por hora pois precisaria do mock de ClassSubject no client para os filtros avançados
+    // O backend real cuidaria melhor desse filtro relacional
+    return matchesSearch && matchesStatus;
+  }) || [];
 
   const handleAction = async (action: () => Promise<any>, successMsg: string) => {
     try {
@@ -110,16 +132,17 @@ export function AdminTeachers() {
   );
 
   const columns = [
-    { header: "Nome", accessor: (t: Teacher) => (
+    { header: "Nome / Matrícula", accessor: (t: any) => (
       <div>
         <p className="font-medium text-slate-900 cursor-pointer hover:underline" onClick={() => router.push(`/admin/professores/${t.id}`)}>{t.name}</p>
-        <p className="text-xs text-slate-500">{t.specialization || 'N/A'}</p>
+        <p className="text-xs text-slate-500">{t.cpf ? `CPF: ${t.cpf}` : (t.specialization || 'N/A')}</p>
       </div>
     )},
     { header: "E-mail", accessor: (t: Teacher) => <span className="text-slate-500">{t.email}</span> },
     { header: "Área", accessor: (t: Teacher) => <span className="text-slate-500">{t.area || '-'}</span> },
-    { header: "Disciplinas", accessor: () => <span className="text-slate-500">-</span> },
-    { header: "Turmas", accessor: () => <span className="text-slate-500">-</span> },
+    { header: "Disciplinas", accessor: (t: any) => <span className="text-slate-500">{t.subjectsCount || 0}</span> },
+    { header: "Turmas", accessor: (t: any) => <span className="text-slate-500">{t.classesCount || 0}</span> },
+    { header: "Carga Horária", accessor: (t: any) => <span className="text-slate-500">{t.workload ? `${t.workload}h` : '-'}</span> },
     { header: "Último Acesso", accessor: (t: Teacher) => (
       <div className="flex items-center text-slate-500 text-sm">
         <Clock className="w-3 h-3 mr-1" />
@@ -147,11 +170,42 @@ export function AdminTeachers() {
 
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
         <AdminFilterBar>
-          <AdminSearchInput 
-            value={searchTerm} 
-            onChange={setSearchTerm} 
-            placeholder="Buscar por nome, e-mail ou área..." 
-          />
+          <div className="flex-1 min-w-[200px]">
+            <AdminSearchInput 
+              value={searchTerm} 
+              onChange={setSearchTerm} 
+              placeholder="Buscar por nome, e-mail, CPF ou área..." 
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val || '')}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Todos Status</SelectItem>
+              <SelectItem value="ACTIVE">Ativo</SelectItem>
+              <SelectItem value="INACTIVE">Inativo</SelectItem>
+              <SelectItem value="BLOCKED">Bloqueado</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={subjectFilter} onValueChange={(val) => setSubjectFilter(val || '')}>
+            <SelectTrigger className="w-[180px] hidden lg:flex">
+              <SelectValue placeholder="Disciplina" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Todas Disciplinas</SelectItem>
+              {subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={classFilter} onValueChange={(val) => setClassFilter(val || '')}>
+            <SelectTrigger className="w-[180px] hidden xl:flex">
+              <SelectValue placeholder="Turma" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Todas as Turmas</SelectItem>
+              {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </AdminFilterBar>
 
         {isLoading ? (

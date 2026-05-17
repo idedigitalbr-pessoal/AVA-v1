@@ -1,9 +1,11 @@
 import { ApiResponse, PaginatedQuery } from './api.types';
 
+// TODO: Replace with real HTTP client (fetch/axios) integrated with NestJS backend
 // Simulando delay de rede
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms));
 
 export class ApiClient {
+  // TODO: Implement actual NestJS endpoints connectivity
   public async get<T>(url: string, params?: any): Promise<ApiResponse<T>> {
     await delay();
     console.log(`GET ${url}`, params);

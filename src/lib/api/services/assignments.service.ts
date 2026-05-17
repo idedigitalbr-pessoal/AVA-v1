@@ -5,7 +5,7 @@ import { mockActivities } from '@/mocks';
 
 export const assignmentsService = {
   list: async (courseId?: string): Promise<Activity[]> => {
-    await apiClient.get(ENDPOINTS.assignments.base, { params: { courseId } });
+    await apiClient.get(ENDPOINTS.ASSIGNMENTS.BASE, { params: { courseId } });
     let assignments = mockActivities.filter(a => a.type === 'ASSIGNMENT');
     if (courseId) {
       assignments = assignments.filter(a => a.courseId === courseId);
@@ -14,12 +14,12 @@ export const assignmentsService = {
   },
 
   create: async (data: any): Promise<Activity> => {
-    await apiClient.post(ENDPOINTS.assignments.base, data);
+    await apiClient.post(ENDPOINTS.ASSIGNMENTS.BASE, data);
     return { id: Math.random().toString(), type: 'ASSIGNMENT', ...data } as Activity;
   },
 
   getAll: async (courseId?: string): Promise<Activity[]> => {
-    await apiClient.get(ENDPOINTS.assignments.base, { params: { courseId } });
+    await apiClient.get(ENDPOINTS.ASSIGNMENTS.BASE, { params: { courseId } });
     let assignments = mockActivities.filter(a => a.type === 'ASSIGNMENT');
     if (courseId) {
       assignments = assignments.filter(a => a.courseId === courseId);
@@ -28,12 +28,12 @@ export const assignmentsService = {
   },
 
   getById: async (id: string): Promise<Activity | undefined> => {
-    await apiClient.get(ENDPOINTS.assignments.byId(id));
+    await apiClient.get(ENDPOINTS.ASSIGNMENTS.BY_ID(id));
     return mockActivities.find(a => a.id === id);
   },
 
   submit: async (id: string, payload: any): Promise<boolean> => {
-    await apiClient.post(ENDPOINTS.assignments.submit(id), payload);
+    await apiClient.post(ENDPOINTS.ASSIGNMENTS.SUBMIT(id), payload);
     return true;
   }
 };

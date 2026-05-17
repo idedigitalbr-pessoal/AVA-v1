@@ -1,20 +1,20 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { DashboardStats } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GraduationCap, Briefcase, Book, DollarSign } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { mockRecentUsers } from "@/mocks";
 
 interface AdminDashboardProps {
   stats: DashboardStats["admin"];
 }
 
 export function AdminDashboard({ stats }: AdminDashboardProps) {
-  const mockRecentUsers = [
-    { id: 1, name: "Lucas Moura", role: "ALUNO", date: "Há 10 min", status: "Ativo" },
-    { id: 2, name: "Fernanda Costa", role: "PROFESSOR", date: "Há 2 horas", status: "Ativo" },
-    { id: 3, name: "Roberto Silva", role: "ALUNO", date: "Há 5 horas", status: "Pendente" },
-  ];
+  const router = useRouter();
 
   return (
     <div className="space-y-6">
@@ -24,7 +24,7 @@ export function AdminDashboard({ stats }: AdminDashboardProps) {
           <h1 className="text-2xl sm:text-3xl font-bold">Visão Geral - Administração</h1>
           <p className="text-slate-300 mt-2">Acompanhe as métricas e gerencie a plataforma com facilidade.</p>
         </div>
-        <Button className="bg-white text-slate-900 hover:bg-slate-100 shadow-sm font-medium w-full sm:w-auto">Novo Cadastro</Button>
+        <Button onClick={() => router.push('/admin/alunos/novo')} className="bg-white text-slate-900 hover:bg-slate-100 shadow-sm font-medium w-full sm:w-auto">Novo Cadastro</Button>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -111,9 +111,9 @@ export function AdminDashboard({ stats }: AdminDashboardProps) {
               <CardTitle>Ações Rápidas</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button variant="outline" className="w-full justify-start">Criar Novo Curso</Button>
-              <Button variant="outline" className="w-full justify-start">Gerenciar Relatórios</Button>
-              <Button variant="outline" className="w-full justify-start">Configurações do Sistema</Button>
+              <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/admin/cursos/novo')}>Criar Novo Curso</Button>
+              <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/admin/relatorios')}>Gerenciar Relatórios</Button>
+              <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/admin/configuracoes')}>Configurações do Sistema</Button>
             </CardContent>
           </Card>
         </div>

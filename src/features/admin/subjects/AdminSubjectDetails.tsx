@@ -8,9 +8,10 @@ import { Subject } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminPageHeader, AdminLoadingState, AdminEmptyState } from "../components";
-import { ArrowLeft, BookOpen, Clock, Settings, GraduationCap, Grid, LibraryBig } from "lucide-react";
+import { ArrowLeft, BookOpen, Clock, Settings, GraduationCap, Grid, LibraryBig, Upload, Archive, LayoutGrid } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { AdminSubjectPlanoEnsino } from "./AdminSubjectPlanoEnsino";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface AdminSubjectDetailsProps {
   subjectId: string;
@@ -74,10 +75,27 @@ export function AdminSubjectDetails({ subjectId }: AdminSubjectDetailsProps) {
           <p className="text-slate-500">Área: <span className="font-medium text-slate-700">{sub.area || 'Não definida'}</span></p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <Button variant="outline" onClick={() => router.push(`/admin/disciplinas/${sub.id}/editar`)}>
-            <Settings className="h-4 w-4 mr-2" />
-            Configurações
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium border border-slate-200 bg-white hover:bg-slate-100 h-9 px-4 py-2">
+              <Settings className="h-4 w-4" />
+              Ações da Disciplina
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => router.push(`/admin/disciplinas/${sub.id}/editar`)}>
+                <Settings className="mr-2 h-4 w-4" /> Editar Disciplina
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast.success("Disciplina publicada com sucesso!")}>
+                <Upload className="mr-2 h-4 w-4" /> Publicar Disciplina
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast.success("Modal abrirá em breve...")}>
+                <LayoutGrid className="mr-2 h-4 w-4" /> Vincular Curso
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => toast.success("Disciplina arquivada.")} className="text-red-600 focus:text-red-600">
+                <Archive className="mr-2 h-4 w-4" /> Arquivar Disciplina
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

@@ -5,27 +5,27 @@ import { allMockUsers, mockStudents, mockEnrollments } from '@/mocks';
 
 export const studentsService = {
   list: async (): Promise<Student[]> => {
-    // await apiClient.get(ENDPOINTS.students.base);
+    await apiClient.get(ENDPOINTS.STUDENTS.BASE);
     return mockStudents;
   },
   
   create: async (data: any): Promise<Student> => {
-    // await apiClient.post(ENDPOINTS.students.base, data);
+    await apiClient.post(ENDPOINTS.STUDENTS.BASE, data);
     return { ...mockStudents[0], id: Math.random().toString(), ...data } as Student;
   },
 
   getAll: async (): Promise<Student[]> => {
-    // await apiClient.get(ENDPOINTS.students.base);
+    await apiClient.get(ENDPOINTS.STUDENTS.BASE);
     return mockStudents;
   },
 
   getById: async (id: string): Promise<Student | undefined> => {
-    // await apiClient.get(ENDPOINTS.students.byId(id));
+    await apiClient.get(ENDPOINTS.STUDENTS.BY_ID(id));
     return mockStudents.find(u => u.id === id);
   },
 
   update: async (id: string, data: Partial<Student>): Promise<Student> => {
-    // await apiClient.put(ENDPOINTS.students.byId(id), data);
+    await apiClient.put(ENDPOINTS.STUDENTS.BY_ID(id), data);
     const stud = mockStudents.find(u => u.id === id);
     return { ...stud, ...data } as Student;
   },
@@ -48,8 +48,12 @@ export const studentsService = {
     return true; // sucesso
   },
 
+  impersonateStudent: async (id: string): Promise<boolean> => {
+    return true; // sucesso
+  },
+
   getEnrollments: async (id: string): Promise<Enrollment[]> => {
-    // await apiClient.get(ENDPOINTS.students.enrollments(id));
+    await apiClient.get(`${ENDPOINTS.STUDENTS.BY_ID(id)}/enrollments`);
     // For 'all' param workaround mentioned earlier
     if (id === 'all') return mockEnrollments;
     return mockEnrollments.filter(e => e.userId === id);

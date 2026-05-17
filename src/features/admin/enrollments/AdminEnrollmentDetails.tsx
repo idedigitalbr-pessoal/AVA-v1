@@ -7,9 +7,10 @@ import { enrollmentService } from "@/lib/api";
 import { useStudents, useCourses, useClasses } from "@/hooks/use-queries";
 import { Enrollment } from "@/types";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle, XCircle, Settings, User } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, Settings, User, Lock, ArrowRightLeft, MoreVertical } from "lucide-react";
 import { AdminLoadingState, AdminEmptyState } from "../components";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface AdminEnrollmentDetailsProps {
   enrollmentId: string;
@@ -64,6 +65,21 @@ export function AdminEnrollmentDetails({ enrollmentId }: AdminEnrollmentDetailsP
     }
   };
 
+  const handleLock = async () => {
+    if (!enr) return;
+    try {
+      // Mocking trancar
+      setEnr({ ...enr, status: 'LOCKED' });
+      toast.success("Matrícula trancada temporariamente");
+    } catch {
+      toast.error("Erro");
+    }
+  };
+
+  const handleTransfer = async () => {
+    toast.success("Funcionalidade de transferência de turma será aberta em breve.");
+  };
+
   const renderStatus = (status: string) => {
     switch (status) {
       case 'CONFIRMED':
@@ -110,11 +126,30 @@ export function AdminEnrollmentDetails({ enrollmentId }: AdminEnrollmentDetailsP
               <CheckCircle className="h-4 w-4 mr-2" /> Confirmar
             </Button>
           )}
-          {['PENDING', 'CONFIRMED', 'LOCKED'].includes(enr.status) && (
-            <Button variant="outline" onClick={handleCancel} className="text-red-600 hover:bg-red-50 border-red-200">
-              <XCircle className="h-4 w-4 mr-2" /> Cancelar
-            </Button>
-          )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium border border-slate-200 bg-white hover:bg-slate-100 h-9 px-4 py-2">
+              <Settings className="h-4 w-4" /> Gerenciar
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={handleTransfer}>
+                <ArrowRightLeft className="mr-2 h-4 w-4" /> Transferir Turma
+              </DropdownMenuItem>
+              {['PENDING', 'CONFIRMED'].includes(enr.status) && (
+                <DropdownMenuItem onClick={handleLock}>
+                  <Lock className="mr-2 h-4 w-4" /> Trancar Matrícula
+                </DropdownMenuItem>
+              )}
+              {['PENDING', 'CONFIRMED', 'LOCKED'].includes(enr.status) && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleCancel} className="text-red-600 focus:text-red-600">
+                    <XCircle className="mr-2 h-4 w-4" /> Cancelar Matrícula
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

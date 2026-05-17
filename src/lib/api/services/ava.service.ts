@@ -14,59 +14,59 @@ export const avaService = {
 
   // Modules
   listModulesByCourse: async (courseId: string): Promise<Module[]> => {
-    await apiClient.get(ENDPOINTS.ava.modules, { params: { courseId } });
+    await apiClient.get(ENDPOINTS.AVA.MODULES, { params: { courseId } });
     return mockModules.filter(m => m.courseId === courseId).sort((a, b) => a.order - b.order);
   },
   createModule: async (courseId: string, data: Partial<Module>): Promise<Module> => {
-    await apiClient.post(ENDPOINTS.ava.modules, data);
+    await apiClient.post(ENDPOINTS.AVA.MODULES, data);
     return { id: `mod-${Math.random().toString()}`, courseId, ...data } as Module;
   },
   updateModule: async (id: string, data: Partial<Module>): Promise<Module> => {
-    await apiClient.put(`${ENDPOINTS.ava.modules}/${id}`, data);
+    await apiClient.put(`${ENDPOINTS.AVA.MODULES}/${id}`, data);
     const existing = mockModules.find(m => m.id === id) || mockModules[0];
     return { ...existing, ...data } as Module;
   },
   deleteModule: async (id: string): Promise<void> => {
-    await apiClient.delete(`${ENDPOINTS.ava.modules}/${id}`);
+    await apiClient.delete(`${ENDPOINTS.AVA.MODULES}/${id}`);
   },
   reorderModules: async (courseId: string, orderedModuleIds: string[]): Promise<void> => {
-    await apiClient.put(`${ENDPOINTS.ava.modules}/reorder`, { courseId, orderedModuleIds });
+    await apiClient.put(`${ENDPOINTS.AVA.MODULES}/reorder`, { courseId, orderedModuleIds });
   },
 
   // Lessons
   listLessonsByModule: async (moduleId: string): Promise<Lesson[]> => {
-    await apiClient.get(ENDPOINTS.ava.lessons(moduleId));
+    await apiClient.get(ENDPOINTS.AVA.LESSONS, { params: { moduleId } });
     return mockLessons.filter(l => l.moduleId === moduleId).sort((a, b) => a.order - b.order);
   },
   createLesson: async (moduleId: string, data: Partial<Lesson>): Promise<Lesson> => {
-    await apiClient.post(ENDPOINTS.ava.lessons(moduleId), data);
+    await apiClient.post(ENDPOINTS.AVA.LESSONS, { ...data, moduleId });
     return { id: `less-${Math.random().toString()}`, moduleId, isPublished: false, isMandatory: false, ...data } as Lesson;
   },
   updateLesson: async (id: string, data: Partial<Lesson>): Promise<Lesson> => {
     const existing = mockLessons.find(l => l.id === id) || mockLessons[0];
-    await apiClient.put(ENDPOINTS.ava.lessonDetail(id), data);
+    await apiClient.put(ENDPOINTS.AVA.LESSON_DETAIL(id), data);
     return { ...existing, ...data } as Lesson;
   },
   deleteLesson: async (id: string): Promise<void> => {
-    await apiClient.delete(ENDPOINTS.ava.lessonDetail(id));
+    await apiClient.delete(ENDPOINTS.AVA.LESSON_DETAIL(id));
   },
   publishLesson: async (id: string): Promise<void> => {
-    await apiClient.put(`${ENDPOINTS.ava.lessonDetail(id)}/publish`);
+    await apiClient.put(`${ENDPOINTS.AVA.LESSON_DETAIL(id)}/publish`);
   },
   unpublishLesson: async (id: string): Promise<void> => {
-    await apiClient.put(`${ENDPOINTS.ava.lessonDetail(id)}/unpublish`);
+    await apiClient.put(`${ENDPOINTS.AVA.LESSON_DETAIL(id)}/unpublish`);
   },
   getLessonDetail: async (lessonId: string): Promise<Lesson | undefined> => {
-    await apiClient.get(ENDPOINTS.ava.lessonDetail(lessonId));
+    await apiClient.get(ENDPOINTS.AVA.LESSON_DETAIL(lessonId));
     return mockLessons.find(l => l.id === lessonId);
   },
 
   // Materials
   addLessonMaterial: async (lessonId: string, data: Partial<LessonMaterial>): Promise<LessonMaterial> => {
-    await apiClient.post(`${ENDPOINTS.ava.lessonDetail(lessonId)}/materials`, data);
+    await apiClient.post(`${ENDPOINTS.AVA.LESSON_DETAIL(lessonId)}/materials`, data);
     return { id: `mat-${Math.random().toString()}`, lessonId, ...data } as LessonMaterial;
   },
   removeLessonMaterial: async (lessonId: string, materialId: string): Promise<void> => {
-    await apiClient.delete(`${ENDPOINTS.ava.lessonDetail(lessonId)}/materials/${materialId}`);
+    await apiClient.delete(`${ENDPOINTS.AVA.LESSON_DETAIL(lessonId)}/materials/${materialId}`);
   }
 };

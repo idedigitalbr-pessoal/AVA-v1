@@ -28,12 +28,12 @@ export const gradesService = {
   },
 
   getStudentGrades: async (studentId: string): Promise<GradeRecord[]> => {
-    await apiClient.get(ENDPOINTS.grades.studentGrades(studentId));
+    await apiClient.get(ENDPOINTS.GRADES.STUDENT_GRADES(studentId));
     return mockGrades.filter(g => g.studentId === studentId); // simulando filtro real
   },
 
   getClassGrades: async (classId: string): Promise<GradeRecord[]> => {
-    await apiClient.get(ENDPOINTS.grades.classGrades(classId));
+    await apiClient.get(ENDPOINTS.GRADES.CLASS_GRADES(classId));
     return mockGrades; // mock retorna tudo
   }
 };

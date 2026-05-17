@@ -93,6 +93,12 @@ export function AdminTeacherDetails({ teacherId }: AdminTeacherDetailsProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          <Button variant="outline" size="sm" onClick={() => toast.success("Vinculando disciplina...")}>
+            <BookOpen className="h-4 w-4 mr-2" /> Vincular Disciplina
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => toast.success("Vinculando turma...")}>
+            <Users className="h-4 w-4 mr-2" /> Vincular Turma
+          </Button>
           <Button variant="outline" size="sm" onClick={() => router.push(`/admin/professores/${teacher.id}/editar`)}>
             <Edit className="h-4 w-4 mr-2" /> Editar
           </Button>
@@ -112,67 +118,99 @@ export function AdminTeacherDetails({ teacherId }: AdminTeacherDetailsProps) {
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <Tabs defaultValue="perfil" className="w-full">
+        <Tabs defaultValue="visaogeral" className="w-full">
           <div className="border-b border-slate-200 bg-slate-50/50 px-4">
             <TabsList className="bg-transparent h-12 w-full justify-start overflow-x-auto">
-              <TabsTrigger value="perfil" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Perfil</TabsTrigger>
+              <TabsTrigger value="visaogeral" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Visão Geral</TabsTrigger>
               <TabsTrigger value="disciplinas" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Disciplinas</TabsTrigger>
               <TabsTrigger value="turmas" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Turmas</TabsTrigger>
-              <TabsTrigger value="conteudos" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Conteúdos Criados</TabsTrigger>
-              <TabsTrigger value="atividades" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Atividades</TabsTrigger>
-              <TabsTrigger value="correcoes" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Correções Pendentes</TabsTrigger>
+              <TabsTrigger value="conteudos" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Conteúdos</TabsTrigger>
+              <TabsTrigger value="avaliacoes" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Avaliações</TabsTrigger>
+              <TabsTrigger value="notas" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Notas Lançadas</TabsTrigger>
+              <TabsTrigger value="frequencia" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Frequência Lançada</TabsTrigger>
               <TabsTrigger value="mensagens" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Mensagens</TabsTrigger>
-              <TabsTrigger value="relatorios" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Relatórios</TabsTrigger>
+              <TabsTrigger value="historico" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Histórico</TabsTrigger>
             </TabsList>
           </div>
 
           <div className="p-6">
-            <TabsContent value="perfil" className="m-0 focus:outline-none">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 <div>
-                   <h3 className="text-sm font-semibold text-slate-900 mb-2">Dados Pessoais</h3>
+            <TabsContent value="visaogeral" className="m-0 focus:outline-none">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                   <h3 className="text-sm font-semibold text-slate-900 mb-3 border-b border-slate-200 pb-2">Dados Pessoais</h3>
                    <div className="space-y-2 text-sm text-slate-600">
                      <p><span className="font-medium text-slate-900">Nome:</span> {teacher.name}</p>
                      <p><span className="font-medium text-slate-900">E-mail:</span> {teacher.email}</p>
-                     <p><span className="font-medium text-slate-900">Especialização:</span> {teacher.specialization}</p>
+                     <p><span className="font-medium text-slate-900">CPF:</span> {(teacher as any).cpf || '-'}</p>
+                     <p><span className="font-medium text-slate-900">Telefone:</span> {(teacher as any).phone || '-'}</p>
                    </div>
                  </div>
-                 <div>
-                   <h3 className="text-sm font-semibold text-slate-900 mb-2">Acesso</h3>
+                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                   <h3 className="text-sm font-semibold text-slate-900 mb-3 border-b border-slate-200 pb-2">Formação e Atuação</h3>
+                   <div className="space-y-2 text-sm text-slate-600">
+                     <p><span className="font-medium text-slate-900">Titulação:</span> {(teacher as any).degree || 'Não informada'}</p>
+                     <p><span className="font-medium text-slate-900">Especialização:</span> {teacher.specialization || '-'}</p>
+                     <p><span className="font-medium text-slate-900">Área:</span> {teacher.area || '-'}</p>
+                     <p><span className="font-medium text-slate-900">Departamento:</span> {teacher.department || '-'}</p>
+                   </div>
+                 </div>
+                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                   <h3 className="text-sm font-semibold text-slate-900 mb-3 border-b border-slate-200 pb-2">Acesso e Sistema</h3>
                    <div className="space-y-2 text-sm text-slate-600">
                      <p><span className="font-medium text-slate-900">Último Login:</span> {teacher.lastAccessAt ? new Date(teacher.lastAccessAt).toLocaleString('pt-BR') : 'Nunca acessou'}</p>
                      <p><span className="font-medium text-slate-900">Data de Cadastro:</span> {new Date(teacher.createdAt).toLocaleDateString('pt-BR')}</p>
+                     <p><span className="font-medium text-slate-900">Lattes:</span> {(teacher as any).lattes ? <a href={(teacher as any).lattes} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">Ver Currículo</a> : '-'}</p>
                    </div>
                  </div>
               </div>
             </TabsContent>
 
-            <TabsContent value="disciplinas" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Disciplinas cadastradas e vinculadas a este professor. <Button variant="link" onClick={() => router.push('/admin/disciplinas')}>Ver Disciplinas</Button></p>
+            <TabsContent value="disciplinas" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Nenhuma disciplina vinculada ainda. <Button variant="link" onClick={() => toast.success("Redirecionando...")}>Vincular Disciplina</Button></p>
+              </div>
             </TabsContent>
 
-            <TabsContent value="turmas" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Turmas onde o professor atua e tem aulas. <Button variant="link" onClick={() => router.push('/admin/turmas')}>Ver Turmas</Button></p>
+            <TabsContent value="turmas" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Nenhuma turma alocada no momento. <Button variant="link" onClick={() => toast.success("Redirecionando...")}>Vincular Turma</Button></p>
+              </div>
             </TabsContent>
 
-            <TabsContent value="conteudos" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Aulas, arquivos e vídeos produzidos ou vinculados pelo professor.</p>
+            <TabsContent value="conteudos" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Aulas, arquivos e vídeos produzidos ou vinculados pelo professor.</p>
+              </div>
             </TabsContent>
 
-            <TabsContent value="atividades" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Trabalhos e listas de exercícios criadas no AVA.</p>
+            <TabsContent value="avaliacoes" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Provas e avaliações elaboradas.</p>
+              </div>
             </TabsContent>
 
-            <TabsContent value="correcoes" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Trabalhos de alunos esperando notas e feedback do professor.</p>
+            <TabsContent value="notas" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Últimos lançamentos de notas no diário escolar.</p>
+              </div>
             </TabsContent>
 
-            <TabsContent value="mensagens" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Fóruns e mensagens enviadas e recebidas pelo professor.</p>
+            <TabsContent value="frequencia" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Registo de frequência dos alunos no diário escolar.</p>
+              </div>
             </TabsContent>
 
-            <TabsContent value="relatorios" className="m-0 focus:outline-none text-center py-12 text-slate-500">
-              <p>Engajamento, médias das turmas e feedbacks dos alunos sobre o professor.</p>
+            <TabsContent value="mensagens" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Fóruns e mensagens enviadas e recebidas pelo professor.</p>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="historico" className="m-0 focus:outline-none">
+              <div className="text-center py-12 text-slate-500 border rounded-lg border-dashed">
+                <p>Histórico de acessos, logs de sistema e auditoria do professor.</p>
+              </div>
             </TabsContent>
 
           </div>

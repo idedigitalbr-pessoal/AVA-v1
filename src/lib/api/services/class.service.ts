@@ -5,7 +5,7 @@ import { mockClasses, mockClassSubjects } from '@/mocks';
 
 export const classesService = {
   listClasses: async (): Promise<Class[]> => {
-    // await apiClient.get(ENDPOINTS.classes.base);
+    await apiClient.get(ENDPOINTS.CLASSES.BASE);
     return mockClasses;
   },
 
@@ -18,7 +18,7 @@ export const classesService = {
   },
 
   getClassById: async (id: string): Promise<Class | undefined> => {
-    // await apiClient.get(ENDPOINTS.classes.byId(id));
+    await apiClient.get(ENDPOINTS.CLASSES.BY_ID(id));
     return mockClasses.find(c => c.id === id);
   },
 
@@ -27,6 +27,7 @@ export const classesService = {
   },
 
   createClass: async (data: Partial<Class>): Promise<Class> => {
+    await apiClient.post(ENDPOINTS.CLASSES.BASE, data);
     const newClass: Class = {
       id: `class-${Math.random()}`,
       name: data.name || '',
@@ -42,15 +43,17 @@ export const classesService = {
   },
 
   updateClass: async (id: string, data: Partial<Class>): Promise<Class> => {
+    await apiClient.put(ENDPOINTS.CLASSES.BY_ID(id), data);
     const existing = mockClasses.find(c => c.id === id) || mockClasses[0];
     return { ...existing, ...data };
   },
 
   archiveClass: async (id: string): Promise<void> => {
-    // API logic to archive class
+    await apiClient.patch(ENDPOINTS.CLASSES.BY_ID(id), { status: 'ARCHIVED' });
   },
 
   linkSubjectToClass: async (classId: string, subjectId: string): Promise<ClassSubject> => {
+    await apiClient.post(`${ENDPOINTS.CLASSES.BY_ID(classId)}/subjects`, { subjectId });
     return {
       id: `cs-${Math.random()}`,
       classId,
@@ -60,11 +63,11 @@ export const classesService = {
   },
 
   unlinkSubjectFromClass: async (classSubjectId: string): Promise<void> => {
-    // API logic to unlink subject
+    await apiClient.delete(`${ENDPOINTS.CLASSES.BASE}/subjects/${classSubjectId}`);
   },
 
   linkTeacherToClassSubject: async (classSubjectId: string, teacherId: string): Promise<void> => {
-    // API logic to assign teacher
+    await apiClient.patch(`${ENDPOINTS.CLASSES.BASE}/subjects/${classSubjectId}/teacher`, { teacherId });
   }
 };
 

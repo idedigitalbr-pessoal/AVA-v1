@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import { AdminAssessmentsDashboard } from '@/features/admin/assessments/AdminAssessmentsDashboard';
 
-export default function AvaliacoesRedirect() {
-  redirect('/admin/avaliacoes/atividades');
+export default function AvaliacoesPage() {
+  return <AdminAssessmentsDashboard />;
 }

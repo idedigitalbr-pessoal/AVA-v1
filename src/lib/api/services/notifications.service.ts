@@ -5,12 +5,12 @@ import { mockNotifications } from '@/mocks';
 
 export const notificationsService = {
   getUserNotifications: async (userId: string): Promise<Notification[]> => {
-    await apiClient.get(ENDPOINTS.notifications.base, { params: { userId } });
+    await apiClient.get(ENDPOINTS.NOTIFICATIONS.BASE, { params: { userId } });
     return mockNotifications.filter(n => n.userId === userId);
   },
 
   markAsRead: async (notificationId: string): Promise<boolean> => {
-    await apiClient.patch(ENDPOINTS.notifications.markAsRead(notificationId));
+    await apiClient.patch(ENDPOINTS.NOTIFICATIONS.MARK_AS_READ(notificationId));
     return true;
   }
 };

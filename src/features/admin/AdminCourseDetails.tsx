@@ -11,6 +11,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AdminLoadingState, AdminEmptyState, AdminPageHeader } from "./components";
 import { ArrowLeft, Edit, LayoutDashboard, BookOpen, Users, GraduationCap, Presentation, BookCheck, ClipboardList, Award, BarChart3, Settings } from "lucide-react";
 
+import { CurriculumMatrixManager } from "./curriculum/CurriculumMatrixManager";
+import { AdminCourseContentManager } from "./ava/AdminCourseContentManager";
+import { CourseClassesTab } from "./courses/tabs/CourseClassesTab";
+import { CourseStudentsTab } from "./courses/tabs/CourseStudentsTab";
+import { CourseTeachersTab } from "./courses/tabs/CourseTeachersTab";
+import { CourseAssessmentsTab } from "./courses/tabs/CourseAssessmentsTab";
+import { CourseCertificatesTab } from "./courses/tabs/CourseCertificatesTab";
+import { CourseReportsTab } from "./courses/tabs/CourseReportsTab";
+import { CourseSettingsTab } from "./courses/tabs/CourseSettingsTab";
+
 interface AdminCourseDetailsProps {
   courseId: string;
 }
@@ -68,72 +78,178 @@ export function AdminCourseDetails({ courseId }: AdminCourseDetailsProps) {
 
         <div className="mt-4">
           <TabsContent value="overview" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               <Card>
-                <CardHeader className="py-4"><CardTitle className="text-sm font-medium text-slate-500">Alunos Matriculados</CardTitle></CardHeader>
-                <CardContent><p className="text-2xl font-bold">{course.totalStudents}</p></CardContent>
+                <CardHeader className="py-2"><CardTitle className="text-xs font-medium text-slate-500">Alunos</CardTitle></CardHeader>
+                <CardContent className="pb-4"><p className="text-2xl font-bold">{course.totalStudents}</p></CardContent>
               </Card>
               <Card>
-                <CardHeader className="py-4"><CardTitle className="text-sm font-medium text-slate-500">Turmas Ativas</CardTitle></CardHeader>
-                <CardContent><p className="text-2xl font-bold">{course.totalClasses}</p></CardContent>
+                <CardHeader className="py-2"><CardTitle className="text-xs font-medium text-slate-500">Turmas</CardTitle></CardHeader>
+                <CardContent className="pb-4"><p className="text-2xl font-bold">{course.totalClasses}</p></CardContent>
               </Card>
               <Card>
-                <CardHeader className="py-4"><CardTitle className="text-sm font-medium text-slate-500">Carga Horária Total</CardTitle></CardHeader>
-                <CardContent><p className="text-2xl font-bold">{course.workload}h</p></CardContent>
+                <CardHeader className="py-2"><CardTitle className="text-xs font-medium text-slate-500">Carga Horária</CardTitle></CardHeader>
+                <CardContent className="pb-4"><p className="text-2xl font-bold">{course.workload}h</p></CardContent>
               </Card>
               <Card>
-                <CardHeader className="py-4"><CardTitle className="text-sm font-medium text-slate-500">Status</CardTitle></CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold">
+                <CardHeader className="py-2"><CardTitle className="text-xs font-medium text-slate-500">Status</CardTitle></CardHeader>
+                <CardContent className="pb-4">
+                  <p className="text-xl font-bold">
                     {course.status === 'PUBLISHED' ? 'Publicado' : course.status === 'ARCHIVED' ? 'Arquivado' : 'Rascunho'}
                   </p>
                 </CardContent>
               </Card>
+              <Card>
+                <CardHeader className="py-2"><CardTitle className="text-xs font-medium text-slate-500">Modalidade</CardTitle></CardHeader>
+                <CardContent className="pb-4"><p className="text-xl font-bold truncate" title={course.modality}>{course.modality}</p></CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="py-2"><CardTitle className="text-xs font-medium text-slate-500">Coordenador</CardTitle></CardHeader>
+                <CardContent className="pb-4"><p className="text-sm font-bold truncate" title={course.coordinatorName || 'Indefinido'}>{course.coordinatorName || 'N/A'}</p></CardContent>
+              </Card>
             </div>
             
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="md:col-span-2 space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Sobre o Curso</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-slate-700">{course.description}</p>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Resumo Acadêmico</CardTitle>
+                    <CardDescription>Métricas automatizadas e status do curso.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="bg-slate-50 p-4 rounded-lg flex flex-col items-center">
+                        <BookOpen className="h-6 w-6 text-blue-500 mb-2" />
+                        <span className="text-2xl font-bold">12</span>
+                        <span className="text-xs text-slate-500 mt-1 uppercase text-center">Disciplinas</span>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-lg flex flex-col items-center">
+                        <ClipboardList className="h-6 w-6 text-green-500 mb-2" />
+                        <span className="text-2xl font-bold">48</span>
+                        <span className="text-xs text-slate-500 mt-1 uppercase text-center">Avaliações</span>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-lg flex flex-col items-center">
+                        <Award className="h-6 w-6 text-yellow-500 mb-2" />
+                        <span className="text-2xl font-bold">150</span>
+                        <span className="text-xs text-slate-500 mt-1 uppercase text-center">Certificados Emitidos</span>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-lg flex flex-col items-center">
+                        <BarChart3 className="h-6 w-6 text-red-500 mb-2" />
+                        <span className="text-2xl font-bold">3</span>
+                        <span className="text-xs text-slate-500 mt-1 uppercase text-center">Pendências</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Ações Rápidas</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Button variant="outline" className="w-full justify-start" onClick={() => router.push(`/admin/cursos/${courseId}/editar`)}>
+                      <Edit className="h-4 w-4 mr-2" /> Editar Informações
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" onClick={() => router.push(`/admin/cursos/${courseId}/conteudo`)}>
+                      <BookCheck className="h-4 w-4 mr-2" /> Gerenciar Conteúdo AVA
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" onClick={() => router.push(`/admin/cursos/${courseId}/matriz-curricular`)}>
+                      <LayoutDashboard className="h-4 w-4 mr-2" /> Abrir Matriz Curricular
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" onClick={() => router.push(`/admin/turmas/novo?courseId=${courseId}`)}>
+                      <Users className="h-4 w-4 mr-2" /> Criar Turma
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" onClick={() => router.push(`/admin/professores/vincular?courseId=${courseId}`)}>
+                      <Presentation className="h-4 w-4 mr-2" /> Vincular Professor
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="curriculum">
             <Card>
-              <CardHeader>
-                <CardTitle>Sobre o Curso</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium text-slate-500">Descrição</h4>
-                  <p className="text-slate-700 mt-1">{course.description}</p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-slate-500">Coordenador</h4>
-                  <p className="text-slate-700 mt-1">{course.coordinatorName || 'Não definido'}</p>
-                </div>
+              <CardContent className="p-6">
+                <CurriculumMatrixManager courseId={courseId} embedded={true} />
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Placeholder for other tabs */}
-          {["curriculum", "classes", "students", "teachers", "content", "assessments", "certificates", "reports", "settings"].map((tab) => (
-            <TabsContent key={tab} value={tab}>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="capitalize">{tab.replace('curriculum', 'Matriz Curricular').replace('classes', 'Turmas').replace('students', 'Alunos').replace('teachers', 'Professores').replace('content', 'Conteúdo AVA').replace('assessments', 'Avaliações').replace('certificates', 'Certificados').replace('reports', 'Relatórios').replace('settings', 'Configurações')}</CardTitle>
-                  <CardDescription>Gerencie informações relacionadas a esta seção.</CardDescription>
-                </CardHeader>
-                <CardContent className="h-64 flex flex-col items-center justify-center border-t border-slate-100 bg-slate-50/50">
-                  {tab === "content" ? (
-                    <>
-                      <p className="text-slate-500 mb-4">Gerencie os módulos, aulas e materiais deste curso em uma interface dedicada.</p>
-                      <Button onClick={() => router.push(`/admin/cursos/${courseId}/conteudo`)}>Acessar Gerenciador de Conteúdo</Button>
-                    </>
-                  ) : tab === "curriculum" ? (
-                    <>
-                      <p className="text-slate-500 mb-4">Estruture os períodos, disciplinas e carga horária da matriz curricular.</p>
-                      <Button onClick={() => router.push(`/admin/cursos/${courseId}/matriz-curricular`)}>Acessar Matriz Curricular</Button>
-                    </>
-                  ) : (
-                    <p className="text-slate-500">Conteúdo da aba em desenvolvimento.</p>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          ))}
+          <TabsContent value="classes">
+            <Card>
+              <CardContent className="p-6">
+                <CourseClassesTab courseId={courseId} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="students">
+            <Card>
+              <CardContent className="p-6">
+                <CourseStudentsTab courseId={courseId} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="teachers">
+            <Card>
+              <CardContent className="p-6">
+                <CourseTeachersTab courseId={courseId} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="content">
+            <Card>
+              <CardContent className="p-6">
+                <AdminCourseContentManager courseId={courseId} embedded={true} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="assessments">
+            <Card>
+              <CardContent className="p-6">
+                <CourseAssessmentsTab courseId={courseId} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="certificates">
+            <Card>
+              <CardContent className="p-6">
+                <CourseCertificatesTab courseId={courseId} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="reports">
+            <Card>
+              <CardContent className="p-6">
+                <CourseReportsTab courseId={courseId} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <Card>
+              <CardContent className="p-6">
+                <CourseSettingsTab courseId={courseId} />
+              </CardContent>
+            </Card>
+          </TabsContent>
         </div>
       </Tabs>
     </div>

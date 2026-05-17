@@ -28,6 +28,7 @@ export function ModuleCard({ module, isFirst, isLast, onMoveUp, onMoveDown, onEd
   const [editingLesson, setEditingLesson] = useState<Lesson | undefined>();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchLessons();
   }, [module.id]);
 

@@ -12,8 +12,19 @@ export const teachersService = {
     return { ...mockTeachers[0], id: Math.random().toString(), ...data } as Teacher;
   },
 
-  getAll: async (): Promise<Teacher[]> => {
-    return mockTeachers;
+  getAll: async (): Promise<any[]> => {
+    return mockTeachers.map(t => {
+      const teacherSubjects = mockSubjects.filter(sub => sub.linkedTeachers?.some(lt => lt.id === t.id));
+      const teacherClassIds = mockClassSubjects.filter(cs => cs.teacherId === t.id).map(cs => cs.classId);
+      const teacherClasses = mockClasses.filter(c => teacherClassIds.includes(c.id));
+      const workload = teacherSubjects.reduce((acc, sub) => acc + (sub.workload || 0), 0);
+      return { 
+        ...t, 
+        subjectsCount: teacherSubjects.length, 
+        classesCount: teacherClasses.length,
+        workload
+      };
+    });
   },
 
   getById: async (id: string): Promise<Teacher | undefined> => {
@@ -37,6 +48,14 @@ export const teachersService = {
 
   resetPassword: async (id: string): Promise<boolean> => {
     return true; // sucesso
+  },
+
+  assignSubject: async (teacherId: string, subjectId: string): Promise<boolean> => {
+    return true;
+  },
+
+  assignClass: async (teacherId: string, classId: string): Promise<boolean> => {
+    return true;
   },
 
   getClasses: async (id: string): Promise<Course[]> => {

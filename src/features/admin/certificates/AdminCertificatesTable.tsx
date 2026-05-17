@@ -54,8 +54,14 @@ export function AdminCertificatesTable({ data, refetch }: AdminCertificatesTable
           <DropdownMenuItem onClick={() => toast.info(`Pré-visualizando certificado ${c.code}`)}>
             <Eye className="mr-2 h-4 w-4" /> Visualizar Certificado
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => copyToClipboard(c.url)}>
-            <Copy className="mr-2 h-4 w-4" /> Copiar Link de Validação
+          <DropdownMenuItem onClick={() => toast.info(`Baixando PDF do certificado ${c.code}`)}>
+            <Award className="mr-2 h-4 w-4" /> Baixar PDF
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => toast.success(`Certificado reenviado para o e-mail do aluno!`)}>
+            <Award className="mr-2 h-4 w-4" /> Reenviar por E-mail
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => toast.info(`Abrir página pública de validação`)}>
+            <Copy className="mr-2 h-4 w-4" /> Link de Validação
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />

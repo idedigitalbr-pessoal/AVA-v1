@@ -20,6 +20,12 @@ export const mockStudents: Student[] = [
   { id: 's5', name: 'Eduarda Lima', email: 'eduarda@ava.edu.br', role: 'ALUNO', registrationNumber: '2026005', cpf: '555.555.555-55', status: 'ACTIVE', lastAccessAt: '2026-05-16T12:45:00Z', avatarUrl: 'https://i.pravatar.cc/150?u=s5', createdAt: '2025-03-05', updatedAt: '2026-05-01' },
 ];
 
+export const mockRecentUsers = [
+  { id: 1, name: "Lucas Moura", role: "ALUNO", date: "Há 10 min", status: "Ativo" },
+  { id: 2, name: "Fernanda Costa", role: "PROFESSOR", date: "Há 2 horas", status: "Ativo" },
+  { id: 3, name: "Roberto Silva", role: "ALUNO", date: "Há 5 horas", status: "Pendente" },
+];
+
 export const allMockUsers: User[] = [...mockUsers, ...mockTeachers, ...mockStudents];
 
 // COURSES

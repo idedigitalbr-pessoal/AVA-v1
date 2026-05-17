@@ -28,6 +28,7 @@ export function AdminCertificateTemplates() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
     fetchData();
   }, []);
 
@@ -49,6 +50,10 @@ export function AdminCertificateTemplates() {
           <DropdownMenuItem onClick={() => toast.info(`Duplicar: ${t.name}`)}>
             <Copy className="mr-2 h-4 w-4" /> Duplicar Template
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => toast.info(`Configurar Regras de Emissão: ${t.name}`)}>
+            <FileText className="mr-2 h-4 w-4" /> Configurar Regras
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
@@ -64,6 +69,12 @@ export function AdminCertificateTemplates() {
           <p className="font-medium text-slate-900">{t.name}</p>
           <p className="text-xs text-slate-500">{t.description || 'Sem descrição'}</p>
         </div>
+      </div>
+    )},
+    { header: "Regras Ativas", accessor: (t: CertificateTemplate) => (
+      <div className="flex gap-2 text-xs">
+         <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded">Prog. 100%</span>
+         <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded">Nota {">="} 7.0</span>
       </div>
     )},
     { header: "Atualizado em", accessor: (t: CertificateTemplate) => <span className="text-slate-500">{new Date(t.updatedAt).toLocaleDateString('pt-BR')}</span> },

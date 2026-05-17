@@ -28,6 +28,14 @@ import { Button } from "@/components/ui/button";
 import { MoreVertical, Edit, Key, Bell, Eye, Ban, CheckCircle, Clock } from "lucide-react";
 import { studentsService } from "@/lib/api";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 export function AdminStudents() {
   const router = useRouter();
   const { data: students, isLoading: isStuLoading, error, refetch } = useStudents();
@@ -36,6 +44,9 @@ export function AdminStudents() {
   const { data: classes } = useClasses();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [courseFilter, setCourseFilter] = useState("ALL");
+  const [classFilter, setClassFilter] = useState("ALL");
 
   if (error) {
     return <ErrorState onRetry={() => refetch()} error={error as Error} />
@@ -50,12 +61,20 @@ export function AdminStudents() {
     return enrollments?.find(e => e.userId === studentId && ['ACTIVE', 'CONFIRMED', 'PENDING'].includes(e.status));
   };
 
-  const filteredStudents = students?.filter(s => 
-    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.registrationNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.cpf?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredStudents = students?.filter(s => {
+    const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          s.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          s.registrationNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          s.cpf?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus = statusFilter === "ALL" || s.status === statusFilter;
+    
+    const enr = getStudentCurrentEnrollment(s.id);
+    const matchesCourse = courseFilter === "ALL" || (enr && enr.courseId === courseFilter);
+    const matchesClass = classFilter === "ALL" || (enr && enr.classId === classFilter);
+
+    return matchesSearch && matchesStatus && matchesCourse && matchesClass;
+  }) || [];
 
   const handleAction = async (action: () => Promise<any>, successMsg: string) => {
     try {
@@ -96,7 +115,7 @@ export function AdminStudents() {
           
           <DropdownMenuSeparator />
           
-          <DropdownMenuItem onClick={() => toast.info("Você está agora impersonando " + s.name)}>
+          <DropdownMenuItem onClick={() => handleAction(() => studentsService.impersonateStudent(s.id), "Redirecionando como " + s.name + "...")}>
             <Eye className="mr-2 h-4 w-4" /> Impersonar aluno
           </DropdownMenuItem>
           
@@ -160,11 +179,44 @@ export function AdminStudents() {
 
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
         <AdminFilterBar>
-          <AdminSearchInput 
-            value={searchTerm} 
-            onChange={setSearchTerm} 
-            placeholder="Buscar por nome, RA, CPF ou e-mail..." 
-          />
+          <div className="flex-1 min-w-[200px]">
+            <AdminSearchInput 
+              value={searchTerm} 
+              onChange={setSearchTerm} 
+              placeholder="Buscar por nome, RA, CPF ou e-mail..." 
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val || '')}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Todos Status</SelectItem>
+              <SelectItem value="ACTIVE">Ativo</SelectItem>
+              <SelectItem value="INACTIVE">Inativo</SelectItem>
+              <SelectItem value="BLOCKED">Bloqueado</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={courseFilter} onValueChange={(val) => setCourseFilter(val || '')}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Curso" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Todos os Cursos</SelectItem>
+              {courses?.map(c => <SelectItem key={c.id} value={c.id}>{c.title}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={classFilter} onValueChange={(val) => setClassFilter(val || '')} disabled={courseFilter === "ALL"}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Turma" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Todas as Turmas</SelectItem>
+              {classes?.filter(c => c.courseId === courseFilter).map(c => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </AdminFilterBar>
 
         {loading ? (

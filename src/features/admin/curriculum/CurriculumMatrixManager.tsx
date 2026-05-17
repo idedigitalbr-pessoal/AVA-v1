@@ -15,9 +15,10 @@ import { AddSubjectToCurriculumModal } from "./AddSubjectToCurriculumModal";
 
 interface CurriculumMatrixManagerProps {
   courseId: string;
+  embedded?: boolean;
 }
 
-export function CurriculumMatrixManager({ courseId }: CurriculumMatrixManagerProps) {
+export function CurriculumMatrixManager({ courseId, embedded }: CurriculumMatrixManagerProps) {
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
   const [periods, setPeriods] = useState<CurriculumPeriod[]>([]);
@@ -33,6 +34,7 @@ export function CurriculumMatrixManager({ courseId }: CurriculumMatrixManagerPro
   const [editingSubject, setEditingSubject] = useState<CurriculumSubject | undefined>();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchData();
   }, [courseId]);
 
@@ -114,18 +116,27 @@ export function CurriculumMatrixManager({ courseId }: CurriculumMatrixManagerPro
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="outline" size="sm" onClick={() => router.push(`/admin/cursos/${courseId}`)}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Voltar para o Curso
-        </Button>
-      </div>
+      {!embedded && (
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="outline" size="sm" onClick={() => router.push(`/admin/cursos/${courseId}`)}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Voltar para o Curso
+          </Button>
+        </div>
+      )}
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <AdminPageHeader 
-          title={`Matriz Curricular: ${course.title}`} 
-          description="Gerencie os semestres/módulos e suas disciplinas."
-        />
+        {!embedded ? (
+          <AdminPageHeader 
+            title={`Matriz Curricular: ${course.title}`} 
+            description="Gerencie os semestres/módulos e suas disciplinas."
+          />
+        ) : (
+          <div>
+            <h3 className="text-lg font-medium">Matriz Curricular</h3>
+            <p className="text-sm text-slate-500">Gerencie os semestres/módulos e suas disciplinas.</p>
+          </div>
+        )}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-lg border border-slate-200">
             <Clock className="h-5 w-5 text-slate-500" />
