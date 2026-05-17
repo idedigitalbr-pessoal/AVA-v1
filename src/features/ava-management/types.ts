@@ -6,7 +6,7 @@ export interface ExtendedLesson {
   videoUrl?: string;
   duration: number;
   order: number;
-  status: 'PUBLISHED' | 'DRAFT';
+  status: 'PUBLISHED' | 'DRAFT' | 'SCHEDULED' | 'ARCHIVED';
   isMandatory?: boolean;
   releaseDate?: string;
   prerequisiteId?: string; // ID of the lesson required to unlock this one

@@ -3,11 +3,11 @@ import { TeacherCourseOverview } from "@/features/professor/TeacherCourseOvervie
 
 export default async function TeacherCoursePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const course = await ApiService.courses.getById(id);
+  const overviewData = await ApiService.teachers.getClassSubjectOverview(id);
 
-  if (!course) {
+  if (!overviewData || !overviewData.classSubject) {
     return <div className="p-8 text-center text-slate-500">Disciplina não encontrada.</div>;
   }
 
-  return <TeacherCourseOverview course={course} />;
+  return <TeacherCourseOverview data={overviewData} />;
 }

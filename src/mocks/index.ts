@@ -125,7 +125,7 @@ export const mockGrades: Grade[] = [
 ];
 
 // ATTENDANCE
-export const mockAttendance: AttendanceRecord[] = [
+export const mockAttendance: any[] = [
   // Ana Souza (s1)
   { id: 'att1', studentId: 's1', classSubjectId: 'cs1', date: '2026-02-15', present: true },
   { id: 'att2', studentId: 's1', classSubjectId: 'cs1', date: '2026-02-22', present: true },
@@ -164,8 +164,13 @@ export const mockStats: DashboardStats = {
   },
   teacher: {
     activeClasses: 5,
-    pendingGrades: 12,
     totalStudents: 285,
+    pendingGrades: 12,
+    pendingQuizzes: 8,
+    unreadMessages: 14,
+    publishedClasses: 42,
+    draftClasses: 3,
+    pendingAttendance: 2,
     upcomingLectures: 3,
   },
   student: {
@@ -175,3 +180,17 @@ export const mockStats: DashboardStats = {
     averageGrade: 8.75,
   }
 };
+
+// Course Student and Grade aggregates for Teacher views
+export const mockCourseStudents = [
+  { id: '1', name: 'Ana Souza', email: 'ana@ava.edu.br', p1: 8.5, p2: 7.0, proj: 9.0, present: true, justification: '' },
+  { id: '2', name: 'Bruno Mendes', email: 'bruno@ava.edu.br', p1: 6.0, p2: 5.5, proj: 7.5, present: false, justification: '' },
+  { id: '3', name: 'Carla Dias', email: 'carla@ava.edu.br', p1: 9.5, p2: 10.0, proj: 10.0, present: true, justification: '' },
+  { id: '4', name: 'Daniel Costa', email: 'daniel@ava.edu.br', p1: 4.5, p2: null, proj: 6.0, present: true, justification: '' },
+  { id: '5', name: 'Eduarda Lima', email: 'eduarda@ava.edu.br', p1: 7.5, p2: 8.0, proj: 8.5, present: true, justification: '' },
+];
+
+export const mockCourseMessages = [
+  { id: '1', studentName: 'Ana Souza', date: '15/05/2026', subject: 'Dúvida sobre a P1', content: 'Professor, o conteúdo abordará o módulo 3 completo?' },
+  { id: '2', studentName: 'Bruno Mendes', date: '14/05/2026', subject: 'Atestado Médico', content: 'Bom dia, faltei ontem. Segue o atestado em anexo.' },
+];

@@ -2,7 +2,7 @@
 
 import { ExtendedModule } from "./types";
 import { Button } from "@/components/ui/button";
-import { GripVertical, PlusCircle, Edit2, Trash2, Video, FileText, CheckCircle, Clock, ChevronUp, ChevronDown } from "lucide-react";
+import { GripVertical, PlusCircle, Edit2, Trash2, Video, FileText, CheckCircle, Clock, ChevronUp, ChevronDown, Copy } from "lucide-react";
 
 interface ModuleListProps {
   modules: ExtendedModule[];
@@ -12,6 +12,7 @@ interface ModuleListProps {
   onAddLesson: (moduleId: string) => void;
   onEditLesson: (lessonId: string, moduleId: string) => void;
   onDeleteLesson: (lessonId: string, moduleId: string) => void;
+  onDuplicateLesson: (lessonId: string, moduleId: string) => void;
   onMoveModule: (moduleId: string, direction: 'up' | 'down') => void;
   onMoveLesson: (lessonId: string, moduleId: string, direction: 'up' | 'down') => void;
 }
@@ -24,6 +25,7 @@ export function ModuleList({
   onAddLesson,
   onEditLesson,
   onDeleteLesson,
+  onDuplicateLesson,
   onMoveModule,
   onMoveLesson
 }: ModuleListProps) {
@@ -83,13 +85,24 @@ export function ModuleList({
                      <div className="flex flex-col min-w-0">
                        <span className="text-sm font-medium text-slate-700 truncate pr-2">{l.order}. {l.title} {l.isMandatory && <span className="text-xs text-red-500 font-bold ml-2">*Obrigatória</span>}</span>
                        <div className="flex items-center gap-2 mt-0.5 whitespace-nowrap">
-                         {l.status === 'PUBLISHED' ? (
+                         {l.status === 'PUBLISHED' && (
                            <span className="flex items-center text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
                              <CheckCircle className="h-3 w-3 mr-1" /> Publicado
                            </span>
-                         ) : (
+                         )}
+                         {l.status === 'DRAFT' && (
                            <span className="flex items-center text-[10px] uppercase font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
                              <Clock className="h-3 w-3 mr-1" /> Rascunho
+                           </span>
+                         )}
+                         {l.status === 'SCHEDULED' && (
+                           <span className="flex items-center text-[10px] uppercase font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
+                             <Clock className="h-3 w-3 mr-1" /> Agendada
+                           </span>
+                         )}
+                         {l.status === 'ARCHIVED' && (
+                           <span className="flex items-center text-[10px] uppercase font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                             <FileText className="h-3 w-3 mr-1" /> Arquivada
                            </span>
                          )}
                          <span className="text-[11px] text-slate-400">{l.duration} min</span>
@@ -99,6 +112,9 @@ export function ModuleList({
                    <div className="flex items-center gap-2">
                        <Button onClick={() => onEditLesson(l.id, m.id)} variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-indigo-600">
                          <Edit2 className="h-4 w-4" />
+                       </Button>
+                       <Button onClick={() => onDuplicateLesson(l.id, m.id)} variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                         <Copy className="h-4 w-4" />
                        </Button>
                        <Button onClick={() => onDeleteLesson(l.id, m.id)} variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
                          <Trash2 className="h-4 w-4" />

@@ -76,6 +76,92 @@ export type CourseStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 export type CourseModality = 'PRESENCIAL' | 'EAD' | 'HIBRIDO';
 export type CourseDegree = 'GRADUACAO' | 'POS_GRADUACAO' | 'LATO_SENSU' | 'STRICTO_SENSU' | 'EXTENSAO' | 'TECNICO' | 'LIVRE';
 
+export interface GradebookAssessment {
+  id: string;
+  name: string;
+  type: 'EXAM' | 'QUIZ' | 'PROJECT' | 'ACTIVITY';
+  weight: number;
+  maxGrade: number;
+  status: 'PENDING' | 'GRADED' | 'PUBLISHED';
+}
+
+export interface StudentGrade {
+  studentId: string;
+  studentName: string;
+  email: string;
+  grades: {
+    [assessmentId: string]: number | null;
+  };
+  finalGrade: number;
+  situation: 'APROVADO' | 'RECUPERACAO' | 'REPROVADO' | 'EM_ANDAMENTO';
+}
+
+export type AttendanceStatus = 'PRESENT' | 'ABSENT' | 'LATE' | 'JUSTIFIED';
+
+export interface AttendanceRecord {
+  studentId: string;
+  studentName: string;
+  status: AttendanceStatus;
+  justification?: string;
+  attendancePercentage: number;
+}
+
+export interface AttendanceSession {
+  id: string;
+  classSubjectId: string;
+  date: string;
+  topic: string;
+  isSaved: boolean;
+  records: AttendanceRecord[];
+}
+
+export type MessageThreadStatus = 'UNREAD' | 'REPLIED' | 'WAITING_STUDENT' | 'ARCHIVED';
+
+export interface TeacherMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderRole: 'TEACHER' | 'STUDENT';
+  content: string;
+  date: string;
+}
+
+export interface TeacherMessageThread {
+  id: string;
+  studentId: string;
+  studentName: string;
+  subject: string;
+  lastMessageDate: string;
+  status: MessageThreadStatus;
+  messages: TeacherMessage[];
+}
+
+export interface ClassAnnouncement {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+  authorName: string;
+}
+
+export interface TeacherCommunicationData {
+  classSubjectId: string;
+  threads: TeacherMessageThread[];
+  announcements: ClassAnnouncement[];
+}
+
+export interface TeacherAttendanceData {
+  classSubjectId: string;
+  sessions: AttendanceSession[];
+  students: { studentId: string; studentName: string; attendancePercentage: number }[];
+}
+
+export interface TeacherGradebook {
+  classSubjectId: string;
+  assessments: GradebookAssessment[];
+  students: StudentGrade[];
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -151,6 +237,53 @@ export interface ClassSubject {
   classId: string;
   subjectId: string;
   teacherId: string;
+}
+
+export interface TeacherClassSubject {
+  id: string; // The classSubjectId
+  subjectName: string;
+  courseName: string;
+  className: string;
+  academicYear: string;
+  totalStudents: number;
+  totalModules: number;
+  publishedClasses: number;
+  draftClasses: number;
+  pendingActivities: number;
+  averageGrade: number;
+  progressPercentage: number;
+  status: 'ACTIVE' | 'ARCHIVED' | 'DRAFT';
+}
+
+export interface TeacherClassOverviewData {
+  classSubject: TeacherClassSubject;
+  metrics: {
+    averageAttendance: number;
+    unreadMessages: number;
+    studentsAtRisk: number;
+    completedLessonsByStudents: number;
+    nextRecommendedAction: string;
+  };
+  studentsAtRiskList: {
+    studentId: string;
+    studentName: string;
+    reason: string;
+    actionType: 'MESSAGE' | 'ATTENDANCE' | 'GRADE';
+  }[];
+  recentActivities: {
+    id: string;
+    title: string;
+    type: 'SUBMISSION' | 'QUIZ' | 'MESSAGE' | 'CONTENT';
+    date: string;
+    description: string;
+  }[];
+  notices: {
+    id: string;
+    title: string;
+    content: string;
+    date: string;
+    author: string;
+  }[];
 }
 
 export interface Enrollment {
@@ -369,8 +502,13 @@ export interface DashboardStats {
   };
   teacher: {
     activeClasses: number;
-    pendingGrades: number;
     totalStudents: number;
+    pendingGrades: number;
+    pendingQuizzes: number;
+    unreadMessages: number;
+    publishedClasses: number;
+    draftClasses: number;
+    pendingAttendance: number;
     upcomingLectures: number;
   };
   student: {
@@ -379,4 +517,47 @@ export interface DashboardStats {
     pendingActivities: number;
     averageGrade: number;
   };
+}
+
+export interface TeacherDashboardData {
+  stats: DashboardStats['teacher'];
+  nextClass: {
+    id: string;
+    title: string;
+    courseName: string;
+    className: string;
+    time: string;
+    type: 'PRESENCIAL' | 'ONLINE' | 'GRAVADA';
+  } | null;
+  todaySchedule: {
+    id: string;
+    title: string;
+    courseName: string;
+    className: string;
+    time: string;
+    type: 'PRESENCIAL' | 'ONLINE' | 'GRAVADA';
+  }[];
+  pendingTasks: {
+    id: string;
+    title: string;
+    type: 'GRADE' | 'ATTENDANCE' | 'MESSAGE' | 'DRAFT';
+    courseName: string;
+    dueDate?: string;
+  }[];
+  coursesProgress: {
+    id: string;
+    courseName: string;
+    className: string;
+    totalStudents: number;
+    publishedClasses: number;
+    totalClasses: number;
+    pendingSubmissions: number;
+    averageGrade: number;
+  }[];
+  alerts: {
+    id: string;
+    title: string;
+    description: string;
+    type: 'DANGER' | 'WARNING' | 'INFO';
+  }[];
 }

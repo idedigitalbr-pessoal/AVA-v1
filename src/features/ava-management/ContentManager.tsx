@@ -123,6 +123,24 @@ export function ContentManager({ courseId, initialModules = [] }: { courseId: st
     }
   };
 
+  const handleDuplicateLesson = (lessonId: string, moduleId: string) => {
+    setModules(modules.map(m => {
+      if (m.id === moduleId) {
+        const lessonToDuplicate = m.lessons.find(l => l.id === lessonId);
+        if (!lessonToDuplicate) return m;
+        
+        const newLesson: ExtendedLesson = {
+          ...lessonToDuplicate,
+          id: Date.now().toString(),
+          title: `${lessonToDuplicate.title} (Cópia)`,
+          order: m.lessons.length + 1,
+        };
+        return { ...m, lessons: [...m.lessons, newLesson] };
+      }
+      return m;
+    }));
+  };
+
   const handleSaveLesson = (lessonData: Partial<ExtendedLesson>) => {
     if (!editingLessonId) return;
 
@@ -177,6 +195,7 @@ export function ContentManager({ courseId, initialModules = [] }: { courseId: st
         onAddLesson={handleAddLesson}
         onEditLesson={handleEditLesson}
         onDeleteLesson={handleDeleteLesson}
+        onDuplicateLesson={handleDuplicateLesson}
         onMoveModule={handleMoveModule}
         onMoveLesson={handleMoveLesson}
       />

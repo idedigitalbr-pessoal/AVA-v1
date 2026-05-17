@@ -21,7 +21,7 @@ export function LessonEditor({ lesson, courseModules = [], onSave, onCancel, onP
   const [content, setContent] = useState(lesson.content || "");
   const [videoUrl, setVideoUrl] = useState(lesson.videoUrl || "");
   const [duration, setDuration] = useState(lesson.duration?.toString() || "10");
-  const [status, setStatus] = useState<'PUBLISHED' | 'DRAFT'>(lesson.status || 'DRAFT');
+  const [status, setStatus] = useState<'PUBLISHED' | 'DRAFT' | 'SCHEDULED' | 'ARCHIVED'>(lesson.status || 'DRAFT');
   const [isMandatory, setIsMandatory] = useState(lesson.isMandatory || false);
   const [releaseDate, setReleaseDate] = useState(lesson.releaseDate || "");
   const [prerequisiteId, setPrerequisiteId] = useState(lesson.prerequisiteId || "");
@@ -103,17 +103,21 @@ export function LessonEditor({ lesson, courseModules = [], onSave, onCancel, onP
               <Input type="number" value={duration} onChange={e => setDuration(e.target.value)} />
             </div>
 
-            <div className="space-y-3 pt-4 border-t border-slate-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-medium text-slate-900">Publicado</h4>
-                  <p className="text-xs text-slate-500">Visível para alunos</p>
-                </div>
-                <Switch 
-                  checked={status === 'PUBLISHED'} 
-                  onCheckedChange={c => setStatus(c ? 'PUBLISHED' : 'DRAFT')} 
-                />
+            <div className="space-y-4 pt-4 border-t border-slate-100">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-800">Status da Aula</label>
+                <select 
+                  value={status}
+                  onChange={e => setStatus(e.target.value as any)}
+                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="DRAFT">Rascunho</option>
+                  <option value="PUBLISHED">Publicada</option>
+                  <option value="SCHEDULED">Agendada</option>
+                  <option value="ARCHIVED">Arquivada</option>
+                </select>
               </div>
+              
               <div className="flex items-center justify-between pt-2">
                 <div>
                   <h4 className="text-sm font-medium text-slate-900">Aula Obrigatória</h4>

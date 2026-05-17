@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { AdminPageHeader, AdminCreateButton, AdminFilterBar, AdminSearchInput, AdminLoadingState } from "../components";
 import { AdminAssessmentsTabs } from "./AdminAssessmentsTabs";
@@ -26,7 +26,7 @@ export function AdminAssessmentsView({ type, title, description }: AdminAssessme
   const [classFilter, setClassFilter] = useState("all");
   const [subjectFilter, setSubjectFilter] = useState("all");
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       let assessments: Assessment[] = [];
@@ -40,9 +40,10 @@ export function AdminAssessmentsView({ type, title, description }: AdminAssessme
     } finally {
       setLoading(false);
     }
-  };
+  }, [type]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
     fetchData();
   }, [type]);
 

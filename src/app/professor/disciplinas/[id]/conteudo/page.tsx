@@ -4,14 +4,9 @@ import { TeacherCourseContent } from "@/features/professor/TeacherCourseContent"
 export default async function ConteudoPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   
-  const modules = await ApiService.content.getCourseModules(id);
-  
-  const modulesWithLessons = await Promise.all(
-    modules.map(async (m) => {
-      const lessons = await ApiService.content.getModuleLessons(m.id);
-      return { ...m, lessons };
-    })
-  );
+  // Na versão final do NestJS, deve puxar os módulos da própria turma/disciplina se forem instanciados,
+  // ou da disciplina raiz se forem herdados. Por enquanto, usamos um mock para a turma.
+  const modulesWithLessons = await ApiService.teachers.getTeacherCourseModules(id);
 
-  return <TeacherCourseContent courseId={id} modules={modulesWithLessons} />;
+  return <TeacherCourseContent classSubjectId={id} initialModules={modulesWithLessons} />;
 }
