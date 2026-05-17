@@ -1,6 +1,7 @@
-export type Role = 'ALUNO' | 'PROFESSOR' | 'ADMIN' | 'SECRETARIA';
+export type Role = 'SUPER_ADMIN' | 'ADMIN' | 'SECRETARIA' | 'COORDENADOR' | 'PROFESSOR' | 'ALUNO' | 'FINANCEIRO' | 'SUPORTE';
 
 export type Permission = 
+  // Old permissions
   | 'VIEW_DASHBOARD'
   | 'MANAGE_USERS'
   | 'MANAGE_COURSES'
@@ -15,7 +16,31 @@ export type Permission =
   | 'CREATE_CONTENT'
   | 'VIEW_GRADES'
   | 'DELETE_USERS'
-  | 'DELETE_COURSES';
+  | 'DELETE_COURSES'
+  // New permissions
+  | 'students.read'
+  | 'students.create'
+  | 'students.update'
+  | 'students.delete'
+  | 'teachers.read'
+  | 'courses.manage'
+  | 'classes.manage'
+  | 'subjects.manage'
+  | 'enrollments.manage'
+  | 'ava.manage'
+  | 'assessments.manage'
+  | 'grades.manage'
+  | 'reports.read'
+  | 'certificates.manage'
+  | 'settings.manage';
+
+export interface RoleProfile {
+  id: string;
+  name: Role;
+  label: string;
+  description: string;
+  permissions: Permission[];
+}
 
 export interface User {
   id: string;

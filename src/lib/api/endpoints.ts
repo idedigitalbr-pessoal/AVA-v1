@@ -1,57 +1,72 @@
-export const endpoints = {
-  auth: {
-    login: '/auth/login',
-    register: '/auth/register',
-    me: '/auth/me',
+export const ENDPOINTS = {
+  AUTH: {
+    LOGIN: '/auth/login',
+    REGISTER: '/auth/register',
+    ME: '/auth/me',
   },
-  students: {
-    base: '/students',
-    byId: (id: string) => `/students/${id}`,
-    enrollments: (id: string) => `/students/${id}/enrollments`,
+  USERS: {
+    BASE: '/users',
+    BY_ID: (id: string) => `/users/${id}`,
   },
-  teachers: {
-    base: '/teachers',
-    byId: (id: string) => `/teachers/${id}`,
-    classes: (id: string) => `/teachers/${id}/classes`,
+  STUDENTS: {
+    BASE: '/students',
+    BY_ID: (id: string) => `/students/${id}`,
   },
-  courses: {
-    base: '/courses',
-    byId: (id: string) => `/courses/${id}`,
-    modules: (id: string) => `/courses/${id}/modules`,
+  TEACHERS: {
+    BASE: '/teachers',
+    BY_ID: (id: string) => `/teachers/${id}`,
   },
-  classes: {
-    base: '/classes',
-    byId: (id: string) => `/classes/${id}`,
-    students: (id: string) => `/classes/${id}/students`,
+  COURSES: {
+    BASE: '/courses',
+    BY_ID: (id: string) => `/courses/${id}`,
   },
-  subjects: {
-    base: '/subjects',
-    byId: (id: string) => `/subjects/${id}`,
+  SUBJECTS: {
+    BASE: '/subjects',
+    BY_ID: (id: string) => `/subjects/${id}`,
   },
-  ava: {
-    modules: '/ava/modules',
-    lessons: (moduleId: string) => `/ava/modules/${moduleId}/lessons`,
-    lessonDetail: (lessonId: string) => `/ava/lessons/${lessonId}`,
+  CLASSES: {
+    BASE: '/classes',
+    BY_ID: (id: string) => `/classes/${id}`,
   },
-  assignments: {
-    base: '/assignments',
-    byId: (id: string) => `/assignments/${id}`,
-    submissions: (id: string) => `/assignments/${id}/submissions`,
-    submit: (id: string) => `/assignments/${id}/submit`,
+  ENROLLMENTS: {
+    BASE: '/enrollments',
+    BY_ID: (id: string) => `/enrollments/${id}`,
   },
-  quizzes: {
-    base: '/quizzes',
-    byId: (id: string) => `/quizzes/${id}`,
-    attempts: (id: string) => `/quizzes/${id}/attempts`,
-    submit: (id: string) => `/quizzes/${id}/submit`,
+  CURRICULUM: {
+    BASE: '/curriculum',
   },
-  grades: {
-    base: '/grades',
-    studentGrades: (studentId: string) => `/grades/student/${studentId}`,
-    classGrades: (classId: string) => `/grades/class/${classId}`,
+  AVA: {
+    MODULES: '/ava/modules',
+    LESSONS: '/ava/lessons',
+    CONTENT: '/ava/content',
   },
-  notifications: {
-    base: '/notifications',
-    markAsRead: (id: string) => `/notifications/${id}/read`,
-  }
+  ASSESSMENTS: {
+    BASE: '/assessments',
+    BY_ID: (id: string) => `/assessments/${id}`,
+  },
+  REPORTS: {
+    BASE: '/reports',
+    PREVIEW: (id: string) => `/reports/${id}/preview`,
+    EXPORT_CSV: (id: string) => `/reports/${id}/export/csv`,
+    EXPORT_PDF: (id: string) => `/reports/${id}/export/pdf`,
+  },
+  CERTIFICATES: {
+    BASE: '/certificates',
+    ISSUE: '/certificates/issue',
+    BY_ID: (id: string) => `/certificates/${id}`,
+  },
+  PERMISSIONS: {
+    ROLES: '/permissions/roles',
+    ROLE_BY_ID: (id: string) => `/permissions/roles/${id}`,
+  },
+  SETTINGS: {
+    BASE: '/settings',
+  },
+  // Legacy paths
+  ava: { modules: '', lessons: (id: string) => '', lessonDetail: (id: string) => '', content: '' },
+  courses: { base: '', byId: (id: string) => '', modules: (id: string) => '' },
+  assignments: { base: '', byId: (id: string) => '', submit: (id: string) => '' },
+  quizzes: { base: '', byId: (id: string) => '', submit: (id: string) => '' },
+  grades: { base: '', byId: (id: string) => '', studentGrades: (id: string) => '', classGrades: (id: string) => '' },
+  notifications: { base: '', byId: (id: string) => '', markAsRead: (id: string) => '' }
 };

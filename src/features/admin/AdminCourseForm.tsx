@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
 import { ArrowLeft, Save } from "lucide-react";
-import { courseService } from "@/lib/api/services/courses.service";
+import { courseService } from "@/lib/api/services/course.service";
 import { Course, CourseStatus, CourseModality, CourseDegree } from "@/types";
 
 import { Button } from "@/components/ui/button";

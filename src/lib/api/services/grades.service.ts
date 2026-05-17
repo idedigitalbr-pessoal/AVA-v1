@@ -1,5 +1,5 @@
-import { apiClient } from '../client';
-import { endpoints } from '../endpoints';
+import { apiClient } from '../api-client';
+import { ENDPOINTS } from '../endpoints';
 
 export interface GradeRecord {
   id: string;
@@ -28,12 +28,12 @@ export const gradesService = {
   },
 
   getStudentGrades: async (studentId: string): Promise<GradeRecord[]> => {
-    await apiClient.get(endpoints.grades.studentGrades(studentId));
+    await apiClient.get(ENDPOINTS.grades.studentGrades(studentId));
     return mockGrades.filter(g => g.studentId === studentId); // simulando filtro real
   },
 
   getClassGrades: async (classId: string): Promise<GradeRecord[]> => {
-    await apiClient.get(endpoints.grades.classGrades(classId));
+    await apiClient.get(ENDPOINTS.grades.classGrades(classId));
     return mockGrades; // mock retorna tudo
   }
 };

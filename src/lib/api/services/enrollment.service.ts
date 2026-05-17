@@ -1,16 +1,16 @@
-import { apiClient } from '../client';
-import { endpoints } from '../endpoints';
+import { apiClient } from '../api-client';
+import { ENDPOINTS } from '../endpoints';
 import { Enrollment } from '@/types';
 import { mockEnrollments } from '@/mocks';
 
 export const enrollmentService = {
   listEnrollments: async (): Promise<Enrollment[]> => {
-    // await apiClient.get(endpoints.enrollments.base);
+    // await apiClient.get(ENDPOINTS.enrollments.base);
     return mockEnrollments;
   },
 
   getEnrollmentById: async (id: string): Promise<Enrollment | undefined> => {
-    // await apiClient.get(endpoints.enrollments.byId(id));
+    // await apiClient.get(ENDPOINTS.enrollments.byId(id));
     return mockEnrollments.find(e => e.id === id);
   },
 

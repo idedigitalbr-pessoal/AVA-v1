@@ -1,5 +1,5 @@
-import { apiClient } from '../client';
-import { endpoints } from '../endpoints';
+import { apiClient } from '../api-client';
+import { ENDPOINTS } from '../endpoints';
 import { User, Teacher, Course, Subject, Class } from '@/types';
 import { mockTeachers, mockCourses, mockSubjects, mockClasses, mockClassSubjects } from '@/mocks';
 

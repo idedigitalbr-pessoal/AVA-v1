@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Course, Module, Lesson } from "@/types";
-import { courseService } from "@/lib/api/services/courses.service";
+import { courseService } from "@/lib/api/services/course.service";
 import { avaService } from "@/lib/api/services/ava.service";
 import { Button } from "@/components/ui/button";
 import { AdminLoadingState, AdminEmptyState, AdminPageHeader } from "../components";

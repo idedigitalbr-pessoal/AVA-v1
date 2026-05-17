@@ -1,11 +1,11 @@
-import { apiClient } from '../client';
-import { endpoints } from '../endpoints';
+import { apiClient } from '../api-client';
+import { ENDPOINTS } from '../endpoints';
 import { Class, ClassSubject } from '@/types';
 import { mockClasses, mockClassSubjects } from '@/mocks';
 
 export const classesService = {
   listClasses: async (): Promise<Class[]> => {
-    // await apiClient.get(endpoints.classes.base);
+    // await apiClient.get(ENDPOINTS.classes.base);
     return mockClasses;
   },
 
@@ -18,7 +18,7 @@ export const classesService = {
   },
 
   getClassById: async (id: string): Promise<Class | undefined> => {
-    // await apiClient.get(endpoints.classes.byId(id));
+    // await apiClient.get(ENDPOINTS.classes.byId(id));
     return mockClasses.find(c => c.id === id);
   },
 

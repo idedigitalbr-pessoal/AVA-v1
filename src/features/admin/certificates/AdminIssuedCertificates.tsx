@@ -63,7 +63,7 @@ export function AdminIssuedCertificates() {
             placeholder="Buscar por código de validação..." 
           />
           <div className="w-[200px]">
-             <Select value={statusFilter} onValueChange={setStatusFilter}>
+             <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val || '')}>
                 <SelectTrigger>
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>

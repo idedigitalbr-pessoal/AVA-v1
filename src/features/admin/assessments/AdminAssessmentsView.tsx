@@ -73,7 +73,7 @@ export function AdminAssessmentsView({ type, title, description }: AdminAssessme
             placeholder="Buscar pelo título..." 
           />
           <div className="w-[200px]">
-             <Select value={courseFilter} onValueChange={(val) => setCourseFilter(val)}>
+             <Select value={courseFilter} onValueChange={(val) => setCourseFilter(val || '')}>
                 <SelectTrigger>
                   <SelectValue placeholder="Curso" />
                 </SelectTrigger>

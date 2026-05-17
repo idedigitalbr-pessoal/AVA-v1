@@ -1,16 +1,16 @@
-import { apiClient } from '../client';
-import { endpoints } from '../endpoints';
+import { apiClient } from '../api-client';
+import { ENDPOINTS } from '../endpoints';
 import { Subject } from '@/types';
 import { mockSubjects } from '@/mocks';
 
 export const subjectsService = {
   getAll: async (): Promise<Subject[]> => {
-    // await apiClient.get(endpoints.subjects.base);
+    // await apiClient.get(ENDPOINTS.subjects.base);
     return mockSubjects;
   },
 
   getById: async (id: string): Promise<Subject | undefined> => {
-    // await apiClient.get(endpoints.subjects.byId(id));
+    // await apiClient.get(ENDPOINTS.subjects.byId(id));
     return mockSubjects.find(c => c.id === id);
   },
 
@@ -43,7 +43,7 @@ export const subjectsService = {
   },
 
   deleteSubject: async (id: string): Promise<void> => {
-    // await apiClient.delete(endpoints.subjects.byId(id));
+    // await apiClient.delete(ENDPOINTS.subjects.byId(id));
   },
 
   linkSubjectToCourse: async (subjectId: string, courseId: string): Promise<void> => {

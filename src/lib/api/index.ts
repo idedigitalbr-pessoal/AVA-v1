@@ -1,12 +1,14 @@
-export { apiClient } from './client';
-export { endpoints } from './endpoints';
+export { apiClient } from './api-client';
+export { ENDPOINTS as endpoints } from './endpoints';
+export * from './error-handler';
+export * from './api.types';
 
 import { authService } from './services/auth.service';
-import { studentsService } from './services/students.service';
-import { teachersService } from './services/teachers.service';
-import { coursesService } from './services/courses.service';
-import { classesService } from './services/classes.service';
-import { subjectsService } from './services/subjects.service';
+import { studentService as studentsService } from './services/student.service';
+import { teachersService } from './services/teacher.service';
+import { coursesService } from './services/course.service';
+import { classesService } from './services/class.service';
+import { subjectsService } from './services/subject.service';
 import { avaService } from './services/ava.service';
 import { assignmentsService } from './services/assignments.service';
 import { quizzesService } from './services/quizzes.service';
@@ -91,18 +93,22 @@ export const ApiService = {
 };
 
 export * from './services/auth.service';
-export * from './services/students.service';
-export * from './services/teachers.service';
-export * from './services/courses.service';
-export * from './services/classes.service';
-export * from './services/subjects.service';
+export * from './services/student.service';
+export * from './services/teacher.service';
+export * from './services/course.service';
+export * from './services/class.service';
+export * from './services/subject.service';
 export * from './services/ava.service';
 export * from './services/assignments.service';
 export * from './services/quizzes.service';
-export * from './services/assessments.service';
-export * from './services/certificates.service';
+export * from './services/assessment.service';
+export * from './services/certificate.service';
 export * from './services/grades.service';
 export * from './services/notifications.service';
-export * from './services/enrollments.service';
-export * from './services/reports.service';
+export * from './services/enrollment.service';
+export * from './services/report.service';
+export * from './services/permission.service';
+export * from './services/user.service';
+export * from './services/curriculum.service';
+export * from './services/settings.service';
 
