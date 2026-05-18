@@ -33,8 +33,12 @@ export function getCategoryConfig(category: EventCategory) {
 }
 
 export function CalendarEventCard({ event, compact = false }: CalendarEventCardProps) {
-  const config = getCategoryConfig(event.category);
-  const start = parseISO(event.startDate);
+  // Safe fallback to 'type' and 'date' for StudentCalendarEvent compatibility
+  const eventCategory = event.category || (event as any).type || "OUTRO";
+  const startDateStr = event.startDate || (event as any).date;
+  
+  const config = getCategoryConfig(eventCategory);
+  const start = startDateStr ? parseISO(startDateStr) : new Date();
   
   const timeString = format(start, "HH:mm");
   const hasTime = timeString !== "00:00" && timeString !== "23:59";
@@ -74,9 +78,9 @@ export function CalendarEventCard({ event, compact = false }: CalendarEventCardP
           {event.title}
         </h4>
         
-        {event.discipline && (
+        {(event.discipline || (event as any).courseName) && (
           <p className="text-xs font-semibold text-slate-500 mb-1">
-            {event.discipline}
+            {event.discipline || (event as any).courseName}
           </p>
         )}
         
