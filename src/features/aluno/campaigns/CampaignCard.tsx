@@ -42,7 +42,7 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
         <h4 className="font-bold text-slate-800 leading-tight mb-1">{campaign.title}</h4>
         <p className="text-xs text-slate-500 mb-4 line-clamp-2">{campaign.description}</p>
         
-        <Link href={campaign.actionUrl} className="inline-flex items-center text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors">
+        <Link href={campaign.actionUrl || "#"} className="inline-flex items-center text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors">
           {campaign.actionText} <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
         </Link>
       </CardContent>

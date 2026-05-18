@@ -1,7 +1,7 @@
 "use client";
 
 import { notFound, useRouter } from "next/navigation";
-import { MOCK_EXAMS } from "./types";
+import { mockExams as MOCK_EXAMS } from "@/mocks/student.mock";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, ChevronLeft, Target } from "lucide-react";

@@ -1,7 +1,7 @@
 "use client";
 
 import { notFound } from "next/navigation";
-import { MOCK_PROTOCOLS } from "./types";
+import { mockProtocols as MOCK_PROTOCOLS } from "@/mocks/student.mock";
 import { getStatusConfig } from "./ServiceList";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

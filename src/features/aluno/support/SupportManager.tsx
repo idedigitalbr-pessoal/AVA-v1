@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { MOCK_TICKETS, SupportTicket, SupportDepartment } from "./types";
+import { useState, useEffect } from "react";
+import { SupportTicket, SupportDepartment } from "./types";
 import { TicketList } from "./TicketList";
 import { TicketChat } from "./TicketChat";
 import { Headset, Plus, MessagesSquare } from "lucide-react";
@@ -12,11 +12,21 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useStudentSupportTickets } from "@/hooks/use-queries";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function SupportManager() {
-  const [tickets, setTickets] = useState<SupportTicket[]>(MOCK_TICKETS);
+  const { data: ticketsData, isLoading } = useStudentSupportTickets();
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   
+  useEffect(() => {
+    if (ticketsData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTickets(ticketsData as any);
+    }
+  }, [ticketsData]);
+
   // New ticket form state
   const [isNewTicketOpen, setIsNewTicketOpen] = useState(false);
   const [newSubject, setNewSubject] = useState("");
@@ -24,6 +34,24 @@ export function SupportManager() {
   const [newFirstMessage, setNewFirstMessage] = useState("");
 
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6 h-[calc(100vh-6rem)] flex flex-col">
+        <div className="shrink-0 flex items-center justify-between">
+          <div>
+            <Skeleton className="h-8 w-48 mb-2" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <Skeleton className="h-10 w-[140px]" />
+        </div>
+        <div className="flex-1 min-h-0 flex gap-6 bg-slate-50/50 rounded-2xl border border-slate-200 p-2 sm:p-4">
+           <Skeleton className="w-80 h-full rounded-xl" />
+           <Skeleton className="flex-1 h-full rounded-xl" />
+        </div>
+      </div>
+    );
+  }
 
   const selectedTicket = tickets.find(t => t.id === selectedTicketId) || null;
 

@@ -1,15 +1,23 @@
 "use client";
 
-import { MOCK_PERFORMANCE } from "./types";
+import { mockPerformance as MOCK_PERFORMANCE } from "@/mocks/student.mock";
 import { DisciplineProgressCard } from "./DisciplineProgressCard";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Target, BrainCircuit, Activity, GraduationCap, CheckCircle2, History, AlertTriangle, FileBarChart, BookOpen } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TrendingUp, Target, BrainCircuit, Activity, GraduationCap, CheckCircle2, History, AlertTriangle, FileBarChart, BookOpen, Medal, Brain } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
+
+const mockEvolutionData = [
+  { month: "Jan", gpa: 7.5, attendance: 90 },
+  { month: "Fev", gpa: 7.8, attendance: 92 },
+  { month: "Mar", gpa: 7.2, attendance: 88 },
+  { month: "Abr", gpa: 8.0, attendance: 95 },
+  { month: "Mai", gpa: 8.2, attendance: 86 },
+];
 
 export function PerformanceManager() {
   const data = MOCK_PERFORMANCE;
-
   const criticalDisciplines = data.disciplines.filter(d => d.status === "CRITICO" || d.status === "ATENCAO");
 
   return (
@@ -47,19 +55,18 @@ export function PerformanceManager() {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 shadow-sm">
-          <CardContent className="p-6 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Status do Curso</span>
-              <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                <TrendingUp className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <h2 className="text-3xl font-black text-slate-900">{data.courseProgress}%</h2>
-              <span className="text-sm text-slate-500 font-medium">Concluído</span>
-            </div>
-            <Progress value={data.courseProgress} className="h-1.5 border border-slate-100 mt-2 bg-slate-100" />
+        <Card className="border-slate-200 shadow-sm bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
+          <CardContent className="p-6 flex flex-col gap-2 relative overflow-hidden">
+             <Medal className="absolute -right-4 -bottom-4 w-24 h-24 text-indigo-400 opacity-20" />
+             <div className="flex items-center justify-between relative z-10">
+               <span className="text-sm font-semibold text-indigo-100 uppercase tracking-wider">Status Pessoal</span>
+             </div>
+             <div className="flex items-baseline gap-2 mt-1 relative z-10">
+               <h2 className="text-2xl font-black text-white">Destaque Top 15%</h2>
+             </div>
+             <p className="text-xs text-indigo-100 font-medium relative z-10 mt-1">
+               {data.disciplines.filter(d => d.grade >= 7).length} de {data.disciplines.length} disciplinas acima da média
+             </p>
           </CardContent>
         </Card>
 
@@ -76,10 +83,68 @@ export function PerformanceManager() {
               <span className="text-sm text-slate-500 font-medium">pendentes</span>
             </div>
             <p className="text-xs text-slate-500 font-medium">
-              <span className="text-emerald-600 font-bold">{data.totalCompletedActivities}</span> concluídas • <span className="text-indigo-600 font-bold">{data.totalQuizzes}</span> quizzes feios
+              <span className="text-emerald-600 font-bold">{data.totalCompletedActivities}</span> concluídas • <span className="text-indigo-600 font-bold">{data.totalQuizzes}</span> quizzes feitos
             </p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Gráficos de Evolução */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+         <Card className="border-slate-200 shadow-sm">
+            <CardHeader className="pb-2 border-b border-slate-100">
+               <CardTitle className="text-base flex items-center gap-2 text-slate-800">
+                 <TrendingUp className="w-4 h-4 text-indigo-500" />
+                 Evolução da Média Geral (GPA)
+               </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+               <div className="h-[250px] w-full">
+                 <ResponsiveContainer width="100%" height="100%">
+                   <AreaChart data={mockEvolutionData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                     <defs>
+                       <linearGradient id="colorGpa" x1="0" y1="0" x2="0" y2="1">
+                         <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                         <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                       </linearGradient>
+                     </defs>
+                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                     <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
+                     <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} domain={[0, 10]} dx={-10} />
+                     <RechartsTooltip 
+                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                       cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: '3 3' }}
+                     />
+                     <Area type="monotone" dataKey="gpa" stroke="#4f46e5" strokeWidth={3} fillOpacity={1} fill="url(#colorGpa)" activeDot={{ r: 6, fill: '#4f46e5', stroke: '#fff', strokeWidth: 2 }} />
+                   </AreaChart>
+                 </ResponsiveContainer>
+               </div>
+            </CardContent>
+         </Card>
+
+         <Card className="border-slate-200 shadow-sm">
+            <CardHeader className="pb-2 border-b border-slate-100">
+               <CardTitle className="text-base flex items-center gap-2 text-slate-800">
+                 <Activity className="w-4 h-4 text-emerald-500" /> 
+                 Evolução de Presença
+               </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+               <div className="h-[250px] w-full">
+                 <ResponsiveContainer width="100%" height="100%">
+                   <LineChart data={mockEvolutionData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                     <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
+                     <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} domain={[0, 100]} dx={-10} />
+                     <RechartsTooltip 
+                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                     />
+                     <Line type="monotone" dataKey="attendance" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: '#10b981', stroke: '#fff', strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                   </LineChart>
+                 </ResponsiveContainer>
+               </div>
+            </CardContent>
+         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

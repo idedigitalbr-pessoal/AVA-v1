@@ -85,4 +85,42 @@ export const ENDPOINTS = {
   SETTINGS: {
     BASE: '/settings',
   },
+  STUDENT_AREA: {
+    DASHBOARD: '/student/dashboard',
+    SUMMARY: '/student/dashboard/summary',
+    LAST_ACCESSED_LESSON: '/student/dashboard/last-accessed',
+    ANNOUNCEMENTS: '/student/dashboard/announcements',
+    CAMPAIGNS: '/student/dashboard/campaigns',
+    SHORTCUTS: '/student/dashboard/shortcuts',
+    
+    COURSES: '/student/courses',
+    COURSE_BY_ID: (id: string) => `/student/courses/${id}`,
+    COURSE_MODULES: (id: string) => `/student/courses/${id}/modules`,
+    COURSE_LESSONS: (id: string) => `/student/courses/${id}/lessons`,
+    COURSE_PROGRESS: (id: string) => `/student/courses/${id}/progress`,
+    
+    LESSON_BY_ID: (courseId: string, lessonId: string) => `/student/courses/${courseId}/lessons/${lessonId}`,
+    LESSON_COMPLETE: (lessonId: string) => `/student/lessons/${lessonId}/complete`,
+    LESSON_UNCOMPLETE: (lessonId: string) => `/student/lessons/${lessonId}/uncomplete`,
+    LESSON_COMMENTS: (lessonId: string) => `/student/lessons/${lessonId}/comments`,
+    LESSON_ATTACHMENTS: (lessonId: string) => `/student/lessons/${lessonId}/attachments`,
+    
+    ACTIVITIES: '/student/activities',
+    ACTIVITY_BY_ID: (id: string) => `/student/activities/${id}`,
+    ACTIVITY_SUBMIT: (id: string) => `/student/activities/${id}/submit`,
+    ACTIVITY_FEEDBACK: (id: string) => `/student/activities/${id}/feedback`,
+    
+    GRADEBOOK: '/student/grades',
+    SUBJECT_GRADES: (subjectId: string) => `/student/grades/${subjectId}`,
+    ATTENDANCE: '/student/attendance',
+    ACADEMIC_HISTORY: '/student/history',
+    
+    FINANCIAL_INVOICES: '/student/financial/invoices',
+    INVOICE_BY_ID: (id: string) => `/student/financial/invoices/${id}`,
+    INVOICE_DOWNLOAD: (id: string) => `/student/financial/invoices/${id}/download`,
+    
+    SUPPORT_TICKETS: '/student/support/tickets',
+    TICKET_BY_ID: (id: string) => `/student/support/tickets/${id}`,
+    TICKET_MESSAGES: (id: string) => `/student/support/tickets/${id}/messages`,
+  },
 };

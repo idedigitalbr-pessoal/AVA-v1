@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { studentsService } from "@/lib/api";
@@ -113,7 +113,7 @@ export function AdminStudentForm({ isEdit, studentId }: AdminStudentFormProps) {
 
   if (loading) return <AdminLoadingState text="Carregando formulário..." />;
 
-  const currentCourse = form.watch('courseId');
+  const currentCourse = useWatch({ control: form.control, name: 'courseId' });
 
   return (
     <div className="space-y-6">

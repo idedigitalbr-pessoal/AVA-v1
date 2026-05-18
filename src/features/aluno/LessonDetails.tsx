@@ -1,98 +1,142 @@
 "use client";
 
-import { Course, Module, Lesson } from "@/types";
+import { useStudentCourseDetails, useStudentModules, useStudentLesson } from "@/hooks/use-queries";
+import { studentLessonsService } from "@/lib/api/services/student-lessons.service";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, CheckCircle2, PlayCircle, FileText, Download, Lock, MessageCircle, Send, Check } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { toast } from "sonner";
-
-interface ModuleWithLessons extends Module {
-  lessons: Lesson[];
-}
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
+import { StudentModule, StudentLesson } from "@/types/student";
 
 interface LessonDetailsProps {
-  course: Course;
-  lesson: Lesson;
-  modules: ModuleWithLessons[];
+  courseId: string;
+  lessonId: string;
 }
 
-export function LessonDetails({ course, lesson: initialLesson, modules: initialModules }: LessonDetailsProps) {
+export function LessonDetails({ courseId, lessonId }: LessonDetailsProps) {
   const { user } = useAuth();
+  const router = useRouter();
   
-  // Local state to simulate completing lessons
-  const [modules, setModules] = useState<ModuleWithLessons[]>(initialModules);
-  const [currentLessonId, setCurrentLessonId] = useState(initialLesson.id);
+  const { data: course, isLoading: loadingCourse } = useStudentCourseDetails(courseId);
+  const { data: initialModules, isLoading: loadingModules } = useStudentModules(courseId);
+  const { data: initialLesson, isLoading: loadingLesson } = useStudentLesson(courseId, lessonId);
+  
+  // Deriving initial state if possible, though since React Query returns undefined first,
+  // we cannot just set it in useState initially.
+  // Instead of syncing with useEffect, we just use the fetched data as a base
+  // and maintain local overrides for optimism.
+  const [modulesOverride, setModulesOverride] = useState<Record<string, StudentModule>>({});
+  const [lessonStatusOverride, setLessonStatusOverride] = useState<Record<string, string>>({});
+  
   const [newQuestion, setNewQuestion] = useState("");
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(true);
+
+  useEffect(() => {
+    if (initialLesson?.id) {
+      let isMounted = true;
+      studentLessonsService.getLessonComments(initialLesson.id).then(qs => {
+        if (isMounted) {
+          setQuestions(qs);
+          setLoadingQuestions(false);
+        }
+      });
+      return () => { isMounted = false; };
+    }
+  }, [initialLesson?.id]);
   
-  // Flatten all lessons
+  const currentLesson = useMemo(() => {
+    if (!initialLesson) return null;
+    return {
+       ...initialLesson,
+       status: lessonStatusOverride[initialLesson.id] || initialLesson.status
+    };
+  }, [initialLesson, lessonStatusOverride]);
+
+  const modules = useMemo(() => {
+    if (!initialModules) return [];
+    return initialModules.map(m => {
+       const modOverride = modulesOverride[m.id] || m;
+       return {
+         ...modOverride,
+         lessons: modOverride.lessons.map(l => ({
+           ...l,
+           status: lessonStatusOverride[l.id] || l.status
+         }))
+       };
+    });
+  }, [initialModules, modulesOverride, lessonStatusOverride]);
+
   const allLessons = useMemo(() => modules.flatMap(m => m.lessons), [modules]);
-  
-  const currentIndex = allLessons.findIndex(l => l.id === currentLessonId);
-  const currentLesson = allLessons[currentIndex];
+  const currentIndex = allLessons.findIndex(l => l.id === lessonId);
   
   const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
   const nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
 
-  const isCompleted = currentLesson?.completed || false;
+  const isCompleted = currentLesson?.status === 'COMPLETED';
   
-  const handleComplete = () => {
-    setModules(prev => prev.map(m => ({
-      ...m,
-      lessons: m.lessons.map(l => 
-        l.id === currentLessonId ? { ...l, completed: !l.completed } : l
-      )
-    })));
-    if (!isCompleted) {
-      toast.success("Aula concluída com sucesso!");
-    } else {
-      toast.info("Aula marcada como não concluída.");
+  const handleComplete = async () => {
+    if (!currentLesson) return;
+    
+    const newStatus = isCompleted ? 'PENDING' : 'COMPLETED';
+    setLessonStatusOverride(prev => ({ ...prev, [currentLesson.id]: newStatus }));
+
+    try {
+      if (isCompleted) {
+        await studentLessonsService.uncompleteLesson(currentLesson.id);
+        toast.info("Aula marcada como não concluída.");
+      } else {
+        await studentLessonsService.completeLesson(currentLesson.id);
+        toast.success("Aula concluída com sucesso!");
+      }
+    } catch {
+      toast.error("Erro ao atualizar status da aula.");
     }
   };
 
   const handleLessonChange = (id: string) => {
-    setCurrentLessonId(id);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    router.push(`/portal/aluno/disciplinas/${courseId}/aulas/${id}`);
   };
   
-  // Mocks for Q&A
-  const [questions, setQuestions] = useState([
-    { id: 1, user: "Carlos Silva", avatar: "CS", text: "Professora, como eu aplico esse conceito num banco NoSQL?", time: "2 dias atrás", isTeacher: false, replies: [
-      { id: 101, user: "Profa. Angela", avatar: "AN", text: "Boa pergunta, Carlos! No NoSQL a modelagem muda bastante. Geralmente usamos documentos aninhados ao invés de relações. Dê uma olhada no material extra que anexei nesta aula.", time: "1 dia atrás", isTeacher: true }
-    ]},
-    { id: 2, user: "Mariana Costa", avatar: "MC", text: "O áudio do vídeo cortou no minuto 12:40, podem verificar?", time: "5 horas atrás", isTeacher: false, replies: [] }
-  ]);
-
-  const handlePostQuestion = () => {
-    if(!newQuestion.trim()) return;
-    setQuestions([
-      {
-        id: Date.now(),
-        user: user?.name || "Aluno",
-        avatar: user?.name?.substring(0,2).toUpperCase() || "AL",
-        text: newQuestion,
-        time: "Agora mesmo",
-        isTeacher: false,
-        replies: []
-      },
-      ...questions
-    ]);
-    setNewQuestion("");
-    toast.success("Dúvida enviada! O professor será notificado.");
+  const handlePostQuestion = async () => {
+    if(!newQuestion.trim() || !currentLesson) return;
+    
+    try {
+      const q = await studentLessonsService.createLessonQuestion(currentLesson.id, { text: newQuestion });
+      setQuestions([q, ...questions]);
+      setNewQuestion("");
+      toast.success("Dúvida enviada! O professor será notificado.");
+    } catch {
+      toast.error("Erro ao enviar dúvida.");
+    }
   };
 
-  const calculateModuleProgress = (moduleLessons: Lesson[]) => {
+  const calculateModuleProgress = (moduleLessons: StudentLesson[]) => {
     if (moduleLessons.length === 0) return 0;
-    const completed = moduleLessons.filter(l => l.completed).length;
+    const completed = moduleLessons.filter(l => l.status === 'COMPLETED').length;
     return Math.round((completed / moduleLessons.length) * 100);
   };
 
-  if(!currentLesson) return null;
+  if (loadingCourse || loadingModules || loadingLesson) {
+    return (
+      <div className="flex flex-col lg:flex-row gap-8 animate-pulse p-4">
+        <div className="flex-1 space-y-6">
+          <Skeleton className="h-10 w-full rounded" />
+          <Skeleton className="h-[400px] w-full rounded-2xl" />
+        </div>
+        <Skeleton className="w-full lg:w-80 xl:w-96 h-[600px] rounded-2xl" />
+      </div>
+    );
+  }
+
+  if (!course || !currentLesson) return <div className="p-8 text-center text-slate-500">Aula não encontrada.</div>;
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
@@ -101,7 +145,7 @@ export function LessonDetails({ course, lesson: initialLesson, modules: initialM
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-500 font-medium">
           <Link href="/portal/aluno/disciplinas" className="hover:text-indigo-600 transition-colors">Minhas Disciplinas</Link>
           <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 text-slate-300" />
-          <Link href={`/portal/aluno/disciplinas/${course.id}`} className="hover:text-indigo-600 transition-colors truncate max-w-[150px] sm:max-w-xs">{course.title}</Link>
+          <Link href={`/portal/aluno/disciplinas/${course.id}`} className="hover:text-indigo-600 transition-colors truncate max-w-[150px] sm:max-w-xs">{course.name}</Link>
           <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 text-slate-300" />
           <span className="text-slate-800 line-clamp-1">{currentLesson.title}</span>
         </div>
@@ -123,9 +167,16 @@ export function LessonDetails({ course, lesson: initialLesson, modules: initialM
                 className="absolute top-0 left-0"
               />
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-slate-900">
                 <PlayCircle className="w-16 h-16 text-slate-700 mb-4" />
-                <p className="text-slate-400 font-medium">Nenhum vídeo disponível para esta aula.</p>
+                <p className="text-slate-400 font-medium text-lg">Conteúdo em texto ou material complementar.</p>
+                <p className="text-slate-500 text-sm mt-2">Esta aula não possui vídeo.</p>
+              </div>
+            )}
+            {/* Fake progress bar overlay if it was video */}
+            {currentLesson.videoUrl && (
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+                <div className="h-full bg-indigo-500 w-[45%]" />
               </div>
             )}
           </div>
@@ -149,12 +200,12 @@ export function LessonDetails({ course, lesson: initialLesson, modules: initialM
             
             <div className="flex items-center gap-2 w-full sm:w-auto">
               {prevLesson && (
-                <Button variant="outline" size="sm" onClick={() => handleLessonChange(prevLesson.id)} className="flex-1 sm:flex-none">
+                <Button variant="outline" size="sm" onClick={() => handleLessonChange(prevLesson.id)} className="flex-1 sm:flex-none hover:bg-slate-50">
                   <ChevronLeft className="h-4 w-4 mr-1" /> Anterior
                 </Button>
               )}
               {nextLesson && (
-                <Button variant="outline" size="sm" onClick={() => handleLessonChange(nextLesson.id)} className="flex-1 sm:flex-none">
+                <Button variant="outline" size="sm" onClick={() => handleLessonChange(nextLesson.id)} className="flex-1 sm:flex-none hover:bg-slate-50">
                   Próxima <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               )}
@@ -164,7 +215,7 @@ export function LessonDetails({ course, lesson: initialLesson, modules: initialM
           {/* Texto Mock */}
           {currentLesson.content && (
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 prose prose-slate max-w-none text-slate-600 leading-relaxed">
-              <div dangerouslySetInnerHTML={{ __html: currentLesson.content.replace(/\n/g, '<br/>') || '<p>Conteúdo da aula.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at erat id nunc scelerisque imperdiet. Nulla in pulvinar libero, non facilisis orci.</p>' }} />
+              <div dangerouslySetInnerHTML={{ __html: currentLesson.content.replace(/\n/g, '<br/>') || '<p>Conteúdo da aula não disponível.</p>' }} />
             </div>
           )}
         </div>
@@ -177,11 +228,24 @@ export function LessonDetails({ course, lesson: initialLesson, modules: initialM
              </h3>
              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                {currentLesson.attachments?.map((file, idx) => (
-                 <a key={idx} href={file.url} className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition-colors group">
+                 <a key={idx} href={file.url || "#"} className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition-colors group">
                     <span className="text-sm font-medium text-slate-700 group-hover:text-indigo-700 truncate mr-3">{file.name}</span>
                     <Download className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 shrink-0" />
                  </a>
                ))}
+               {/* Sempre exibe extras de mock para exemplificar */}
+               {!currentLesson.attachments && (
+                  <>
+                     <a href="#" className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition-colors group">
+                        <span className="text-sm font-medium text-slate-700 group-hover:text-indigo-700 truncate mr-3">Apostila em PDF</span>
+                        <Download className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 shrink-0" />
+                     </a>
+                     <a href="#" className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition-colors group">
+                        <span className="text-sm font-medium text-slate-700 group-hover:text-indigo-700 truncate mr-3">Slides da Aula</span>
+                        <Download className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 shrink-0" />
+                     </a>
+                  </>
+               )}
              </div>
            </div>
         )}
@@ -217,43 +281,53 @@ export function LessonDetails({ course, lesson: initialLesson, modules: initialM
               </div>
             </div>
 
-            <div className="space-y-6">
-              {questions.map(q => (
-                <div key={q.id} className="space-y-4">
-                  <div className="flex gap-4">
-                    <Avatar className="h-10 w-10 border border-slate-200 shrink-0 mt-1">
-                      <AvatarFallback className="bg-slate-100 text-slate-600 font-semibold">{q.avatar}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 bg-slate-50 rounded-2xl rounded-tl-none p-4 border border-slate-100">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-semibold text-sm text-slate-900">{q.user}</span>
-                        <span className="text-xs text-slate-400">{q.time}</span>
-                      </div>
-                      <p className="text-sm text-slate-700 leading-relaxed">{q.text}</p>
-                    </div>
-                  </div>
-                  
-                  {/* Respostas */}
-                  {q.replies.map(r => (
-                    <div key={r.id} className="flex gap-4 ml-12">
-                      <Avatar className="h-8 w-8 border border-slate-200 shrink-0 mt-1">
-                        <AvatarFallback className={`font-semibold text-xs ${r.isTeacher ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-600'}`}>
-                          {r.avatar}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className={`flex-1 rounded-2xl rounded-tl-none p-4 border ${r.isTeacher ? 'bg-indigo-50/50 border-indigo-100' : 'bg-slate-50 border-slate-100'}`}>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="font-semibold text-sm text-slate-900">{r.user}</span>
-                          {r.isTeacher && <span className="bg-indigo-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Professor</span>}
-                          <span className="text-xs text-slate-400 ml-auto">{r.time}</span>
+            {loadingQuestions ? (
+               <div className="flex justify-center p-4">
+                  <span className="text-slate-400 text-sm">Carregando discussões...</span>
+               </div>
+            ) : questions.length === 0 ? (
+               <div className="text-center py-8">
+                  <p className="text-slate-500">Nenhuma dúvida enviada ainda. Seja o primeiro!</p>
+               </div>
+            ) : (
+                <div className="space-y-6">
+                  {questions.map(q => (
+                    <div key={q.id} className="space-y-4">
+                      <div className="flex gap-4">
+                        <Avatar className="h-10 w-10 border border-slate-200 shrink-0 mt-1">
+                          <AvatarFallback className="bg-slate-100 text-slate-600 font-semibold">{q.avatar}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 bg-slate-50 rounded-2xl rounded-tl-none p-4 border border-slate-100">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="font-semibold text-sm text-slate-900">{q.user}</span>
+                            <span className="text-xs text-slate-400">{q.time}</span>
+                          </div>
+                          <p className="text-sm text-slate-700 leading-relaxed">{q.text}</p>
                         </div>
-                        <p className="text-sm text-slate-700 leading-relaxed">{r.text}</p>
                       </div>
+                      
+                      {/* Respostas */}
+                      {q.replies && q.replies.map((r: any) => (
+                        <div key={r.id} className="flex gap-4 ml-12">
+                          <Avatar className="h-8 w-8 border border-slate-200 shrink-0 mt-1">
+                            <AvatarFallback className={`font-semibold text-xs ${r.isTeacher ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-600'}`}>
+                              {r.avatar}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className={`flex-1 rounded-2xl rounded-tl-none p-4 border ${r.isTeacher ? 'bg-indigo-50/50 border-indigo-100' : 'bg-slate-50 border-slate-100'}`}>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="font-semibold text-sm text-slate-900">{r.user}</span>
+                              {r.isTeacher && <span className="bg-indigo-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Professor(a)</span>}
+                              <span className="text-xs text-slate-400 ml-auto">{r.time}</span>
+                            </div>
+                            <p className="text-sm text-slate-700 leading-relaxed">{r.text}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </div>
-              ))}
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -266,7 +340,7 @@ export function LessonDetails({ course, lesson: initialLesson, modules: initialM
             {/* Progresso Geral Mocks */}
             {(() => {
               const totalLessons = allLessons.length;
-              const completedLessons = allLessons.filter(l => l.completed).length;
+              const completedLessons = allLessons.filter(l => l.status === 'COMPLETED').length;
               const progressCourse = Math.round((completedLessons / (totalLessons || 1)) * 100);
               return (
                 <div className="space-y-1.5">
@@ -297,13 +371,15 @@ export function LessonDetails({ course, lesson: initialLesson, modules: initialM
                   
                   <div className="divide-y divide-slate-50">
                     {module.lessons.map((l, lIdx) => {
-                      const isCurrent = currentLessonId === l.id;
+                      const isCurrent = currentLesson.id === l.id;
                       
                       // Simulando bloqueio: só libera a aula se for a primeira ou se a anterior do curso todo estiver concluída
                       // Para facilitar na UI de mock, vamos fingir que apenas aulas além da próxima incompleta estão bloqueadas
                       const globalIndex = allLessons.findIndex(al => al.id === l.id);
-                      const isLocked = globalIndex > 0 && !allLessons[globalIndex - 1].completed && globalIndex > currentIndex + 1; // Simplification just for visual mock
+                      const isLocked = globalIndex > 0 && (allLessons[globalIndex - 1].status !== 'COMPLETED') && globalIndex > currentIndex; 
                       
+                      const isComp = l.status === 'COMPLETED';
+
                       return (
                         <button 
                           key={l.id} 
@@ -318,7 +394,7 @@ export function LessonDetails({ course, lesson: initialLesson, modules: initialM
                           
                           <div className="flex items-start gap-3 w-full pr-2">
                             <div className="mt-0.5 shrink-0">
-                              {l.completed ? (
+                              {isComp ? (
                                 <CheckCircle2 className={`h-4 w-4 ${isCurrent ? 'text-indigo-600' : 'text-emerald-500'}`} />
                               ) : isLocked ? (
                                 <Lock className="h-4 w-4 text-slate-400" />
@@ -335,7 +411,7 @@ export function LessonDetails({ course, lesson: initialLesson, modules: initialM
                               </p>
                               <div className="flex items-center gap-3 mt-1.5 text-[11px] font-medium">
                                 <span className={isCurrent ? 'text-indigo-600/70' : 'text-slate-500 shrink-0 flex items-center'}>
-                                  <PlayCircle className="w-3 h-3 mr-1 inline" /> {l.duration} min
+                                  {l.type === 'VIDEO' ? <PlayCircle className="w-3 h-3 mr-1 inline" /> : <FileText className="w-3 h-3 mr-1 inline" />} {l.duration ? `${l.duration} min` : 'Leitura'}
                                 </span>
                                 {(l.attachments?.length ?? 0) > 0 && !isLocked && (
                                   <span className="text-slate-400 flex items-center shrink-0">

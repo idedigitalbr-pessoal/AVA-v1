@@ -5,7 +5,7 @@ export * from './api.types';
 
 import { authService } from './services/auth.service';
 import { studentService as studentsService } from './services/student.service';
-import { teacherService } from './services/teacher.service';
+import { teacherService, teachersService } from './services/teacher.service';
 import { teacherCoursesService } from './services/teacher-courses.service';
 import { teacherContentService } from './services/teacher-content.service';
 import { teacherActivitiesService } from './services/teacher-activities.service';
@@ -14,6 +14,19 @@ import { teacherAttendanceService } from './services/teacher-attendance.service'
 import { teacherMessagesService } from './services/teacher-messages.service';
 import { teacherQuestionsService } from './services/teacher-questions.service';
 import { teacherReportsService } from './services/teacher-reports.service';
+import { studentDashboardService } from './services/student-dashboard.service';
+import { studentCoursesService } from './services/student-courses.service';
+import { studentLessonsService } from './services/student-lessons.service';
+import { studentActivitiesService } from './services/student-activities.service';
+import { studentQuizzesService } from './services/student-quizzes.service';
+import { studentExamsService } from './services/student-exams.service';
+import { studentGradesService } from './services/student-grades.service';
+import { studentCalendarService } from './services/student-calendar.service';
+import { studentMessagesService } from './services/student-messages.service';
+import { studentNotificationsService } from './services/student-notifications.service';
+import { studentFinancialService } from './services/student-financial.service';
+import { studentSupportService } from './services/student-support.service';
+import { studentSettingsService } from './services/student-settings.service';
 import { coursesService } from './services/course.service';
 import { classesService } from './services/class.service';
 import { subjectsService } from './services/subject.service';
@@ -193,6 +206,21 @@ export const ApiService = {
   },
   subjects: {
     getAll: async () => subjectsService.getAll(),
+  },
+  aluno: {
+    dashboard: studentDashboardService,
+    courses: studentCoursesService,
+    lessons: studentLessonsService,
+    activities: studentActivitiesService,
+    quizzes: studentQuizzesService,
+    exams: studentExamsService,
+    grades: studentGradesService,
+    calendar: studentCalendarService,
+    messages: studentMessagesService,
+    notifications: studentNotificationsService,
+    financial: studentFinancialService,
+    support: studentSupportService,
+    settings: studentSettingsService
   }
 };
 

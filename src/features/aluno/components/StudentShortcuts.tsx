@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Settings, GraduationCap, BookOpen, Briefcase, Tv, LifeBuoy, Calendar as CalendarIcon, LineChart, Video, Megaphone } from "lucide-react";
+import * as Icons from "lucide-react";
 import { ReactNode } from "react";
 
 // --- Types ---
@@ -8,10 +9,21 @@ export interface ShortcutItem {
   id: string;
   title: string;
   description?: string;
-  icon: ReactNode;
-  href: string;
+  icon?: ReactNode;
+  iconName?: string; // used for JSON payload
+  href?: string;
+  link?: string; // fallback alias
   pendingCount?: number;
   accentColor?: "indigo" | "red" | "amber" | "emerald" | "blue" | "slate";
+}
+
+function renderIcon(item: ShortcutItem) {
+  if (item.icon) return item.icon;
+  if (item.iconName && (Icons as any)[item.iconName]) {
+    const IconCmp = (Icons as any)[item.iconName];
+    return <IconCmp className="w-5 h-5" />;
+  }
+  return <Icons.MoreHorizontal className="w-5 h-5" />;
 }
 
 // --- Quick Access Card (Grid Card) ---
@@ -19,7 +31,7 @@ export interface ShortcutItem {
 export function QuickAccessCard({ item }: { item: ShortcutItem }) {
   return (
     <Link 
-      href={item.href}
+      href={item.href || item.link || "#"}
       className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all text-center group relative overflow-hidden"
     >
       {item.pendingCount && item.pendingCount > 0 && (
@@ -28,7 +40,7 @@ export function QuickAccessCard({ item }: { item: ShortcutItem }) {
         </span>
       )}
       <div className="p-3 bg-slate-50 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 rounded-full mb-3 transition-colors">
-        {item.icon}
+        {renderIcon(item)}
       </div>
       <span className="text-sm font-bold text-slate-800 group-hover:text-indigo-700 transition-colors">{item.title}</span>
       {item.description && (
@@ -80,12 +92,12 @@ export function SideShortcutList({ items }: { items: ShortcutItem[] }) {
         return (
           <Link
             key={item.id}
-            href={item.href}
+            href={item.href || item.link || "#"}
             className={`flex items-center justify-between p-3 sm:p-4 bg-white rounded-xl border shadow-sm transition-all group ${colorClass.split('border-')[1] ? `border-${colorClass.split('border-')[1]} hover:${colorClass.split('hover:')[1]}` : 'border-slate-200 hover:border-slate-300 hover:shadow-md'}`}
           >
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg transition-colors ${colorClass.split('group-hover')[0]} ${colorClass.match(/group-hover:[^\s]+/g)?.join(' ')}`}>
-                {item.icon}
+                {renderIcon(item)}
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-slate-700 text-sm leading-tight group-hover:text-slate-900 transition-colors">

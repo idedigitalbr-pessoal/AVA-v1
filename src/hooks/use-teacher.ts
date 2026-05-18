@@ -72,7 +72,7 @@ export function useTeacherQuestions(filters?: any) {
 
 // Relatórios
 export function useTeacherReports(classSubjectId: string, type: 'PERFORMANCE' | 'ATTENDANCE' | 'ENGAGEMENT' | 'RISK') {
-  return useQuery({
+  return useQuery<any>({
     queryKey: ['teacher-reports', classSubjectId, type],
     queryFn: () => {
       switch (type) {

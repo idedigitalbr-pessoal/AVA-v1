@@ -1,17 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { StudentNotification, NotificationType, MOCK_NOTIFICATIONS } from "./types";
+import { useState, useEffect } from "react";
+import { StudentNotification, NotificationType } from "./types";
 import { NotificationCard } from "./NotificationCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Bell, CheckCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useStudentNotifications } from "@/hooks/use-queries";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function NotificationManager() {
-  const [notifications, setNotifications] = useState<StudentNotification[]>(MOCK_NOTIFICATIONS);
+  const { data: notificationsData, isLoading } = useStudentNotifications();
+  const [notifications, setNotifications] = useState<StudentNotification[]>([]);
   const [filterType, setFilterType] = useState<NotificationType | "ALL">("ALL");
   const [filterRead, setFilterRead] = useState<"ALL" | "UNREAD" | "READ">("ALL");
+
+  useEffect(() => {
+    if (notificationsData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setNotifications(notificationsData as any);
+    }
+  }, [notificationsData]);
 
   const handleMarkAsRead = (id: string) => {
     setNotifications(current => 
@@ -22,6 +32,26 @@ export function NotificationManager() {
   const handleMarkAllAsRead = () => {
     setNotifications(current => current.map(n => ({...n, isRead: true})));
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <Skeleton className="h-8 w-48 mb-2" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <Skeleton className="h-9 w-[180px]" />
+          <Skeleton className="h-9 w-[200px]" />
+        </div>
+        <div className="space-y-4">
+           {[1,2,3].map(i => <Skeleton key={i} className="h-24 w-full rounded-xl" />)}
+        </div>
+      </div>
+    );
+  }
 
   const filteredNotifs = notifications.filter(notif => {
     const matchesType = filterType === "ALL" || notif.type === filterType;

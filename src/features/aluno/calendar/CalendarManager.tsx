@@ -5,15 +5,19 @@ import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, en
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MOCK_EVENTS, EventCategory } from "./types";
-import { CalendarEventCard, getCategoryConfig } from "./CalendarEventCard";
+import { EventCategory } from "./types";
+import { CalendarEventCard } from "./CalendarEventCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { useStudentCalendar } from "@/hooks/use-queries";
 
 export function CalendarManager() {
+  const { data: events, isLoading } = useStudentCalendar();
   const [currentDate, setCurrentDate] = useState(new Date(2026, 4, 16)); // Mocking current contextual date
   const [filterCategory, setFilterCategory] = useState<EventCategory | "ALL">("ALL");
+
+  const MOCK_EVENTS = events || [];
 
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
@@ -32,12 +36,14 @@ export function CalendarManager() {
     end: endDate,
   });
 
-  const filteredEvents = MOCK_EVENTS.filter(e => filterCategory === "ALL" || e.category === filterCategory);
+  const filteredEvents = MOCK_EVENTS.filter((e: any) => filterCategory === "ALL" || e.type === filterCategory);
 
   const nextUpcomingEvents = MOCK_EVENTS
-    .filter(e => parseISO(e.startDate) >= new Date(2026, 4, 16))
-    .sort((a, b) => parseISO(a.startDate).getTime() - parseISO(b.startDate).getTime())
+    .filter((e: any) => parseISO(e.date) >= new Date(2026, 4, 16))
+    .sort((a: any, b: any) => parseISO(a.date).getTime() - parseISO(b.date).getTime())
     .slice(0, 5);
+
+  if (isLoading) return <div className="p-8 text-center text-slate-500">Carregando calendário...</div>;
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 lg:h-[calc(100vh-6rem)] relative">
@@ -94,7 +100,7 @@ export function CalendarManager() {
         <ScrollArea className="flex-1 min-h-0 bg-slate-50/20">
           <div className="grid grid-cols-7 auto-rows-fr min-h-full">
             {calendarDays.map((day, i) => {
-              const dayEvents = filteredEvents.filter(e => isSameDay(parseISO(e.startDate), day));
+              const dayEvents = filteredEvents.filter((e: any) => isSameDay(parseISO(e.date), day));
               const isCurrentMonth = isSameMonth(day, monthStart);
               const isTodayDate = isSameDay(day, new Date(2026, 4, 16));
 
@@ -116,8 +122,8 @@ export function CalendarManager() {
                   </div>
                   
                   <div className="flex flex-col gap-1 overflow-hidden flex-1">
-                    {dayEvents.map(event => (
-                      <CalendarEventCard key={event.id} event={event} compact />
+                    {dayEvents.map((event: any) => (
+                      <CalendarEventCard key={event.id} event={event as any} compact />
                     ))}
                   </div>
                 </div>
@@ -148,8 +154,8 @@ export function CalendarManager() {
                {nextUpcomingEvents.length === 0 ? (
                  <p className="text-sm text-slate-500 text-center py-4">Sem eventos próximos.</p>
                ) : (
-                 nextUpcomingEvents.map(event => (
-                   <CalendarEventCard key={event.id} event={event} />
+                 nextUpcomingEvents.map((event: any) => (
+                   <CalendarEventCard key={event.id} event={event as any} />
                  ))
                )}
             </div>

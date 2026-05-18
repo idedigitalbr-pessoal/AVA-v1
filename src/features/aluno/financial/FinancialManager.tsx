@@ -1,189 +1,367 @@
 "use client";
 
-import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MOCK_INVOICES, MOCK_FINANCIAL_SUMMARY, InvoiceStatus, Invoice } from "./types";
-import { DollarSign, Download, Copy, CheckCircle2, Clock, AlertCircle, XCircle, FileText, Calendar, Check } from "lucide-react";
-
-export function getStatusConfig(status: InvoiceStatus) {
-  switch (status) {
-    case "EM_ABERTO": return { label: "Em Aberto", color: "bg-blue-100 text-blue-700 border-blue-200", icon: <Clock className="w-3.5 h-3.5" /> };
-    case "PAGO": return { label: "Pago", color: "bg-emerald-100 text-emerald-700 border-emerald-200", icon: <CheckCircle2 className="w-3.5 h-3.5" /> };
-    case "VENCIDO": return { label: "Vencido", color: "bg-red-100 text-red-700 border-red-200", icon: <AlertCircle className="w-3.5 h-3.5" /> };
-    case "CANCELADO": return { label: "Cancelado", color: "bg-slate-100 text-slate-500 border-slate-200", icon: <XCircle className="w-3.5 h-3.5" /> };
-    default: return { label: status, color: "bg-slate-100 text-slate-700", icon: <FileText className="w-3.5 h-3.5" /> };
-  }
-}
+import { DollarSign, Download, Copy, CheckCircle2, Clock, AlertCircle, Calendar, RefreshCcw, Handshake, MoreHorizontal, FileText, FileDown, Check } from "lucide-react";
+import { useStudentFinancial } from "@/hooks/use-queries";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
+import { studentFinancialService } from "@/lib/api/services/student-financial.service";
 
 export function formatCurrency(value: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 }
 
-function InvoiceCard({ invoice }: { invoice: Invoice }) {
-  const [copied, setCopied] = useState(false);
-  const config = getStatusConfig(invoice.status);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(invoice.barcode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <Card className={`border-slate-200 shadow-sm transition-shadow hover:shadow-md ${invoice.status === 'VENCIDO' ? 'border-red-200 bg-red-50/10' : ''}`}>
-      <CardContent className="p-4 sm:p-5 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-        <div className="space-y-3 flex-1">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className={`flex items-center gap-1 uppercase tracking-wider text-[10px] font-bold ${config.color}`}>
-              {config.icon} {config.label}
-            </Badge>
-            <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
-              <Calendar className="w-3.5 h-3.5" /> Vencimento: {invoice.dueDate}
-            </span>
-          </div>
-          <div>
-            <h3 className="font-bold text-slate-800 text-lg leading-tight">{invoice.description}</h3>
-            <p className="text-2xl font-black text-indigo-700 mt-1">{formatCurrency(invoice.amount)}</p>
-          </div>
-        </div>
-
-        {(invoice.status === "EM_ABERTO" || invoice.status === "VENCIDO") && (
-          <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto shrink-0 mt-2 md:mt-0">
-            <Button variant="outline" className="w-full sm:w-auto border-indigo-200 text-indigo-700 hover:bg-indigo-50" onClick={handleCopy}>
-              {copied ? <Check className="w-4 h-4 mr-2 text-emerald-500" /> : <Copy className="w-4 h-4 mr-2" />}
-              {copied ? "Copiado!" : "Copiar Código"}
-            </Button>
-            <Button className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700">
-              <Download className="w-4 h-4 mr-2" /> Baixar Boleto
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
+function getStatusConfig(status: string) {
+  switch (status) {
+    case "PENDING":
+      return { label: "Em Aberto", color: "bg-blue-100 text-blue-800 border-none", icon: <Clock className="w-3.5 h-3.5" /> };
+    case "PAID":
+      return { label: "Pago", color: "bg-emerald-100 text-emerald-800 border-none", icon: <CheckCircle2 className="w-3.5 h-3.5" /> };
+    case "LATE":
+      return { label: "Atrasado", color: "bg-red-100 text-red-800 border-none", icon: <AlertCircle className="w-3.5 h-3.5" /> };
+    case "NEGOTIATED":
+      return { label: "Negociado", color: "bg-amber-100 text-amber-800 border-none", icon: <Handshake className="w-3.5 h-3.5" /> };
+    default:
+      return { label: status, color: "bg-slate-100 text-slate-700 border-none", icon: <FileText className="w-3.5 h-3.5" /> };
+  }
 }
 
 export function FinancialManager() {
-  const [activeTab, setActiveTab] = useState("aberto");
+  const { data: financialData, isLoading } = useStudentFinancial();
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState<string | null>(null);
 
-  const openInvoices = MOCK_INVOICES.filter(i => i.status === "EM_ABERTO" || i.status === "VENCIDO");
-  const paidInvoices = MOCK_INVOICES.filter(i => i.status === "PAGO");
-  const otherInvoices = MOCK_INVOICES.filter(i => i.status === "CANCELADO");
+  const openDetails = async (id: string) => {
+    // using mock data already in memory, or use service
+    const invoice = await studentFinancialService.getInvoiceDetails(id);
+    if(invoice) {
+      setSelectedInvoice(invoice);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCopyPix = (id: string) => {
+    navigator.clipboard.writeText(`00020126360014BR.GOV.BCB.PIX011400000000000000${id}`);
+    setCopiedId(id);
+    toast.success("Código Pix copiado com sucesso!");
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleDownloadBoleto = async (id: string) => {
+    setIsDownloading(id);
+    toast.info("Baixando boleto...");
+    await studentFinancialService.simulateDownloadInvoice(id);
+    setTimeout(() => {
+       setIsDownloading(null);
+       toast.success("Download concluído.");
+    }, 1500);
+  };
+
+  const handleDownloadReceipt = async (id: string) => {
+    setIsDownloading(id);
+    toast.info("Baixando recibo...");
+    setTimeout(() => {
+       setIsDownloading(null);
+       toast.success("Recibo baixado com sucesso.");
+    }, 1500);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6 max-w-6xl mx-auto">
+         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[1,2,3,4].map(i => <Skeleton key={i} className="h-32 w-full rounded-xl" />)}
+         </div>
+         <Skeleton className="h-[400px] w-full rounded-xl" />
+      </div>
+    );
+  }
+
+  if (!financialData) {
+    return <div className="p-8 text-center text-slate-500">Erro ao carregar dados financeiros.</div>;
+  }
+
+  const { invoices = [], status, nextBill } = financialData;
+
+  // Estado local para Date.now() para evitar re-render puro com impure function
+  const [now, setNow] = useState(0);
+  useEffect(() => {
+    setNow(Date.now());
+  }, []);
+
+  const currentMonthInvoice = invoices.find(i => i.status === "PENDING" && new Date(i.dueDate).getTime() >= now && now !== 0);
+  const openInvoices = invoices.filter(i => i.status === "PENDING" || i.status === "LATE");
+  const totalOpen = openInvoices.reduce((acc, inv) => acc + inv.amount, 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl mx-auto">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">Financeiro</h1>
+        <p className="text-slate-500 text-sm mt-1">Gerencie suas mensalidades e pagamentos.</p>
+      </div>
       
       {/* Resumo Financeiro */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
-        <Card className={`border-none shadow-sm ${MOCK_FINANCIAL_SUMMARY.status === 'REGULAR' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-white/20 rounded-lg">
-                {MOCK_FINANCIAL_SUMMARY.status === 'REGULAR' ? <CheckCircle2 className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
-              </div>
-              <h3 className="font-bold text-lg opacity-90">Status Financeiro</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        {/* Mensalidade Atual */}
+        <Card className="border-indigo-100 bg-indigo-50/50 shadow-sm relative overflow-hidden">
+          <CardContent className="p-5 flex flex-col justify-between h-full relative z-10">
+            <h3 className="text-sm font-semibold text-indigo-800 opacity-80 uppercase tracking-wider mb-2">Mensalidade Atual</h3>
+            {currentMonthInvoice ? (
+               <div>
+                  <p className="text-3xl font-black text-indigo-900">{formatCurrency(currentMonthInvoice.amount)}</p>
+                  <p className="text-xs text-indigo-700 font-medium mt-1">{currentMonthInvoice.competency}</p>
+               </div>
+            ) : (
+               <div className="flex items-center gap-2 text-indigo-700">
+                  <CheckCircle2 className="w-5 h-5 text-indigo-500" />
+                  <span className="font-semibold text-sm">Sem mensalidade pendente no mês atual</span>
+               </div>
+            )}
+          </CardContent>
+          <div className="absolute -right-4 -bottom-4 opacity-10 text-indigo-600">
+            <DollarSign className="w-24 h-24" />
+          </div>
+        </Card>
+
+        {/* Próximo Vencimento */}
+        <Card className="border-slate-200 shadow-sm">
+          <CardContent className="p-5 flex flex-col justify-between h-full">
+            <div className="flex justify-between items-start">
+               <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Próximo Vencimento</h3>
+               <Calendar className="w-4 h-4 text-slate-400" />
             </div>
-            <p className="text-2xl font-black mt-2">
-              {MOCK_FINANCIAL_SUMMARY.status === 'REGULAR' ? 'Regular' : 'Inadimplente'}
-            </p>
-            <p className="text-sm opacity-80 mt-1">Situação atual da sua matrícula</p>
+            <div>
+               <p className="text-2xl font-bold text-slate-800">
+                 {nextBill ? new Date(nextBill.dueDate).toLocaleDateString() : 'Nenhum'}
+               </p>
+               <p className="text-xs text-slate-500 font-medium mt-1 text-truncate">
+                 {nextBill ? nextBill.description : 'Sua situação está regular'}
+               </p>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 shadow-sm bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                <Calendar className="w-6 h-6" />
-              </div>
-              <h3 className="font-bold text-slate-600 text-lg">Próximo Vencimento</h3>
+        {/* Total em Aberto */}
+        <Card className="border-slate-200 shadow-sm">
+          <CardContent className="p-5 flex flex-col justify-between h-full">
+            <div className="flex justify-between items-start">
+               <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Total em Aberto</h3>
+               <DollarSign className="w-4 h-4 text-slate-400" />
             </div>
-            <p className="text-2xl font-black text-slate-800 mt-2">
-              {MOCK_FINANCIAL_SUMMARY.nextDueDate || 'Nenhum'}
-            </p>
-            <p className="text-sm text-slate-500 mt-1">Data limite para o próximo pagamento</p>
+            <div>
+               <p className={`text-2xl font-bold ${totalOpen > 0 ? "text-amber-600" : "text-slate-800"}`}>
+                 {formatCurrency(totalOpen)}
+               </p>
+               <p className="text-xs text-slate-500 font-medium mt-1">
+                 {openInvoices.length} fatura(s) pendente(s)
+               </p>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 shadow-sm bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
-                <DollarSign className="w-6 h-6" />
+        {/* Situação Financeira */}
+        <Card className={`border-none shadow-sm ${status === 'REGULAR' ? 'bg-emerald-600 text-white' : status === 'NEGOTIATED' ? 'bg-amber-500 text-white' : 'bg-rose-500 text-white'}`}>
+          <CardContent className="p-5 flex flex-col justify-between h-full">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5 bg-white/20 rounded-md">
+                {status === 'REGULAR' ? <CheckCircle2 className="w-4 h-4" /> : status === 'NEGOTIATED' ? <Handshake className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
               </div>
-              <h3 className="font-bold text-slate-600 text-lg">Total em Aberto</h3>
+              <h3 className="font-semibold text-sm opacity-90 uppercase tracking-wider">Situação Financeira</h3>
             </div>
-            <p className="text-2xl font-black text-slate-800 mt-2">
-              {formatCurrency(MOCK_FINANCIAL_SUMMARY.totalOpen)}
+            <p className="text-2xl font-bold">
+              {status === 'REGULAR' ? 'Regular' : status === 'NEGOTIATED' ? 'Regularizada' : 'Inadimplente'}
             </p>
-            <p className="text-sm text-slate-500 mt-1">Soma das mensalidades pendentes</p>
+            <p className="text-xs opacity-80 mt-1 font-medium">{status === 'REGULAR' ? "Nenhuma pendência ativa" : status === 'NEGOTIATED' ? "Acordo ativo em andamento" : "Taxas em atraso detectadas"}</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Lista de Cobranças */}
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="border-b border-slate-100 pb-4">
-          <CardTitle className="text-xl">Extrato Financeiro</CardTitle>
-          <CardDescription>Acompanhe suas mensalidades e taxas</CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Tabs defaultValue="aberto" onValueChange={setActiveTab} className="w-full">
-            <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-              <TabsList className="bg-slate-200/50">
-                <TabsTrigger value="aberto" className="data-[state=active]:bg-white data-[state=active]:text-indigo-700">
-                  Em Aberto ({openInvoices.length})
-                </TabsTrigger>
-                <TabsTrigger value="pago" className="data-[state=active]:bg-white data-[state=active]:text-emerald-700">
-                  Pagos ({paidInvoices.length})
-                </TabsTrigger>
-                <TabsTrigger value="outros" className="data-[state=active]:bg-white data-[state=active]:text-slate-700">
-                  Outros ({otherInvoices.length})
-                </TabsTrigger>
-              </TabsList>
-            </div>
-            
-            <div className="p-4 sm:p-6 bg-slate-50/30">
-              <TabsContent value="aberto" className="mt-0 space-y-4">
-                {openInvoices.length === 0 ? (
-                  <div className="text-center py-10">
-                    <CheckCircle2 className="w-12 h-12 text-emerald-300 mx-auto mb-3" />
-                    <h3 className="font-medium text-slate-600">Tudo certo por aqui!</h3>
-                    <p className="text-sm text-slate-500">Nenhuma cobrança em aberto no momento.</p>
-                  </div>
-                ) : (
-                  openInvoices.map(invoice => <InvoiceCard key={invoice.id} invoice={invoice} />)
-                )}
-              </TabsContent>
-
-              <TabsContent value="pago" className="mt-0 space-y-4">
-                {paidInvoices.length === 0 ? (
-                  <div className="text-center py-10">
-                    <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                    <h3 className="font-medium text-slate-600">Nenhum histórico encontrado</h3>
-                  </div>
-                ) : (
-                  paidInvoices.map(invoice => <InvoiceCard key={invoice.id} invoice={invoice} />)
-                )}
-              </TabsContent>
-
-              <TabsContent value="outros" className="mt-0 space-y-4">
-                {otherInvoices.length === 0 ? (
-                  <div className="text-center py-10">
-                    <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                    <h3 className="font-medium text-slate-600">Nenhum histórico encontrado</h3>
-                  </div>
-                ) : (
-                  otherInvoices.map(invoice => <InvoiceCard key={invoice.id} invoice={invoice} />)
-                )}
-              </TabsContent>
-            </div>
-          </Tabs>
-        </CardContent>
+      {/* Tabela de Cobranças */}
+      <Card className="border-slate-200 shadow-sm overflow-hidden">
+         <CardHeader className="border-b border-slate-100 bg-slate-50/50 pb-4">
+            <CardTitle className="text-lg">Extrato e Pagamentos</CardTitle>
+            <CardDescription>Acompanhe e gerencie todas as faturas.</CardDescription>
+         </CardHeader>
+         <CardContent className="p-0">
+           {invoices.length > 0 ? (
+             <div className="overflow-x-auto">
+               <Table>
+                  <TableHeader>
+                     <TableRow className="bg-slate-50/50 hover:bg-slate-50/50">
+                       <TableHead className="font-medium text-slate-500 min-w-[200px]">Competência</TableHead>
+                       <TableHead className="font-medium text-slate-500 whitespace-nowrap">Vencimento</TableHead>
+                       <TableHead className="font-medium text-slate-500 whitespace-nowrap">Valor</TableHead>
+                       <TableHead className="font-medium text-slate-500 whitespace-nowrap">Status</TableHead>
+                       <TableHead className="font-medium text-slate-500 whitespace-nowrap">Pagamento</TableHead>
+                       <TableHead className="text-right font-medium text-slate-500 whitespace-nowrap">Ações</TableHead>
+                     </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                     {invoices.map((invoice) => {
+                       const statusConf = getStatusConfig(invoice.status);
+                       return (
+                          <TableRow key={invoice.id} className="hover:bg-slate-50 transition-colors group">
+                             <TableCell className="font-medium text-slate-800">
+                                <span className="flex flex-col">
+                                   <span className="whitespace-nowrap">{invoice.competency}</span>
+                                   <span className="text-xs text-slate-400 font-normal truncate max-w-[200px]">{invoice.description}</span>
+                                </span>
+                             </TableCell>
+                             <TableCell className="text-slate-600 whitespace-nowrap">
+                                {new Date(invoice.dueDate).toLocaleDateString()}
+                             </TableCell>
+                             <TableCell className="font-semibold text-slate-900 whitespace-nowrap">
+                                {formatCurrency(invoice.amount)}
+                             </TableCell>
+                             <TableCell className="whitespace-nowrap">
+                                <Badge className={`text-xs gap-1 font-semibold ${statusConf.color}`}>
+                                   {statusConf.icon} {statusConf.label}
+                                </Badge>
+                             </TableCell>
+                             <TableCell className="text-slate-500 text-sm whitespace-nowrap">
+                                {invoice.paymentMethod || "-"}
+                             </TableCell>
+                             <TableCell className="text-right whitespace-nowrap">
+                                <DropdownMenu>
+                                   <DropdownMenuTrigger asChild>
+                                      <Button variant="ghost" className="h-8 w-8 p-0">
+                                         <span className="sr-only">Abrir menu</span>
+                                         <MoreHorizontal className="h-4 w-4 text-slate-500 group-hover:text-indigo-600 transition-colors" />
+                                      </Button>
+                                   </DropdownMenuTrigger>
+                                   <DropdownMenuContent align="end" className="w-[200px]">
+                                      <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                      <DropdownMenuItem onClick={() => openDetails(invoice.id)}>
+                                         <FileText className="mr-2 h-4 w-4" /> Ver Detalhes
+                                      </DropdownMenuItem>
+                                      <DropdownMenuSeparator />
+                                      
+                                      {(invoice.status === "PENDING" || invoice.status === "LATE" || invoice.status === "NEGOTIATED") && (
+                                         <>
+                                         <DropdownMenuItem onClick={() => handleCopyPix(invoice.id)}>
+                                            {copiedId === invoice.id ? <Check className="mr-2 h-4 w-4 text-emerald-500" /> : <Copy className="mr-2 h-4 w-4" />} Copiar Pix
+                                         </DropdownMenuItem>
+                                         <DropdownMenuItem onClick={() => handleDownloadBoleto(invoice.id)} disabled={isDownloading === invoice.id}>
+                                            {isDownloading === invoice.id ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin text-slate-500" /> : <FileDown className="mr-2 h-4 w-4" />} Baixar Boleto
+                                         </DropdownMenuItem>
+                                         </>
+                                      )}
+                                      {invoice.status === "PAID" && (
+                                         <DropdownMenuItem onClick={() => handleDownloadReceipt(invoice.id)} disabled={isDownloading === invoice.id}>
+                                            {isDownloading === invoice.id ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin text-slate-500" /> : <Download className="mr-2 h-4 w-4" />} Baixar Recibo
+                                         </DropdownMenuItem>
+                                      )}
+                                   </DropdownMenuContent>
+                                </DropdownMenu>
+                             </TableCell>
+                          </TableRow>
+                       )
+                     })}
+                  </TableBody>
+               </Table>
+             </div>
+           ) : (
+             <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                <FileText className="h-12 w-12 text-slate-200 mb-4" />
+                <h3 className="text-lg font-medium text-slate-900">Nenhuma fatura encontrada</h3>
+                <p className="text-slate-500 mt-1 max-w-sm">Você não possui histórico financeiro ou cobranças registradas no momento.</p>
+             </div>
+           )}
+         </CardContent>
       </Card>
+
+      {/* Modal de Detalhes da Cobrança */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Detalhes da Fatura</DialogTitle>
+            <DialogDescription>
+              Informações completas sobre esta cobrança.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedInvoice && (
+            <div className="space-y-4 py-4">
+               <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                  <span className="text-sm font-medium text-slate-500">Status</span>
+                  <Badge className={`${getStatusConfig(selectedInvoice.status).color} font-bold text-xs`}>
+                     {getStatusConfig(selectedInvoice.status).label}
+                  </Badge>
+               </div>
+               
+               <div className="space-y-3 px-1">
+                  <div className="flex justify-between border-b border-slate-100 pb-2">
+                     <span className="text-sm text-slate-500">Competência</span>
+                     <span className="text-sm font-medium text-slate-900">{selectedInvoice.competency}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-slate-100 pb-2">
+                     <span className="text-sm text-slate-500">Descrição</span>
+                     <span className="text-sm font-medium text-slate-900">{selectedInvoice.description}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-slate-100 pb-2">
+                     <span className="text-sm text-slate-500">Vencimento</span>
+                     <span className="text-sm font-medium text-slate-900">{new Date(selectedInvoice.dueDate).toLocaleDateString()}</span>
+                  </div>
+                  {selectedInvoice.paidAt && (
+                     <div className="flex justify-between border-b border-slate-100 pb-2">
+                        <span className="text-sm text-slate-500">Data de Pagamento</span>
+                        <span className="text-sm font-medium text-slate-900">{new Date(selectedInvoice.paidAt).toLocaleDateString()}</span>
+                     </div>
+                  )}
+                  {selectedInvoice.paymentMethod && (
+                     <div className="flex justify-between border-b border-slate-100 pb-2">
+                        <span className="text-sm text-slate-500">Forma de Pagamento</span>
+                        <span className="text-sm font-medium text-slate-900">{selectedInvoice.paymentMethod}</span>
+                     </div>
+                  )}
+                  <div className="flex justify-between pt-2">
+                     <span className="font-semibold text-slate-900">Total</span>
+                     <span className="text-xl font-bold text-indigo-700">{formatCurrency(selectedInvoice.amount)}</span>
+                  </div>
+               </div>
+
+               {(selectedInvoice.status === "PENDING" || selectedInvoice.status === "LATE" || selectedInvoice.status === "NEGOTIATED") && (
+                  <div className="pt-4 flex flex-col gap-2">
+                     <Button className="w-full" onClick={() => handleCopyPix(selectedInvoice.id)}>
+                        {copiedId === selectedInvoice.id ? <Check className="mr-2 h-4 w-4 text-emerald-500" /> : <Copy className="mr-2 h-4 w-4" />} {copiedId === selectedInvoice.id ? "Código Pix Copiado" : "Copiar Código Pix"}
+                     </Button>
+                     <Button variant="outline" className="w-full" onClick={() => handleDownloadBoleto(selectedInvoice.id)} disabled={isDownloading === selectedInvoice.id}>
+                        {isDownloading === selectedInvoice.id ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin" /> : <FileDown className="mr-2 h-4 w-4" />} Baixar Boleto Bancário
+                     </Button>
+                  </div>
+               )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

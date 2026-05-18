@@ -1,7 +1,7 @@
 "use client";
 
 import { notFound, useRouter } from "next/navigation";
-import { MOCK_EXAMS } from "./types";
+import { mockExams as MOCK_EXAMS } from "@/mocks/student.mock";
 import { getExamStatusConfig } from "./ExamDashboard";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

@@ -5,9 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Camera, Mail, Phone, MapPin, Briefcase, GraduationCap } from "lucide-react";
+import { Camera, Mail, Phone, MapPin, Briefcase, GraduationCap, FileText, Download, CheckCircle2, FileX, Fingerprint, CalendarDays, Edit2, Check } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 interface StudentProfileProps {
   user: User;
@@ -15,135 +26,204 @@ interface StudentProfileProps {
 }
 
 export function StudentProfile({ user, stats }: StudentProfileProps) {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveContact = () => {
+    setIsSaving(true);
+    setTimeout(() => {
+       setIsSaving(false);
+       setIsEditModalOpen(false);
+       toast.success("Dados de contato atualizados com sucesso!");
+    }, 1000);
+  };
+
+  const mockDocuments = [
+    { id: 1, name: "RG / CPF", status: "VALIDATED" },
+    { id: 2, name: "Comprovante de Residência", status: "VALIDATED" },
+    { id: 3, name: "Histórico Escolar Ensino Médio", status: "PENDING" },
+    { id: 4, name: "Certificado de Conclusão Ensino Médio", status: "MISSING" },
+  ];
+
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Meu Perfil</h1>
-        <p className="text-slate-500 text-sm mt-1">Gerencie suas informações pessoais e preferências.</p>
+        <p className="text-slate-500 text-sm mt-1">Visualize suas informações pessoais, acadêmicas e documentação.</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Lado Esquerdo - Info e Actions */}
-        <div className="w-full md:w-1/3 flex flex-col gap-6">
-          <Card className="overflow-hidden border-slate-200">
-             <div className="h-32 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Lado Esquerdo - Info Principal */}
+        <div className="w-full lg:w-1/3 flex flex-col gap-6">
+          <Card className="overflow-hidden border-slate-200 shadow-sm relative">
+             <div className="h-32 bg-gradient-to-r from-indigo-500 to-indigo-700"></div>
              <div className="px-6 pb-6 relative">
-                <div className="absolute -top-12 left-6 border-4 border-white rounded-full bg-slate-200 h-24 w-24 overflow-hidden shadow-sm flex items-center justify-center text-3xl font-bold text-slate-500 group cursor-pointer">
+                <div className="absolute -top-12 left-6 border-4 border-white rounded-full bg-slate-200 h-24 w-24 overflow-hidden flex items-center justify-center text-3xl font-bold text-slate-500 group shadow-sm">
                   {user.avatarUrl ? (
-                    <Image src={user.avatarUrl} alt={user.name} fill className="object-cover group-hover:brightness-75 transition-all" />
+                    <Image src={user.avatarUrl} alt={user.name} fill className="object-cover" />
                   ) : (
                     user.name.substring(0, 2).toUpperCase()
                   )}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white bg-black/30">
-                    <Camera className="h-8 w-8" />
-                  </div>
                 </div>
                 
                 <div className="mt-14">
                    <h2 className="text-xl font-bold text-slate-900">{user.name}</h2>
-                   <p className="text-slate-500 text-sm">{user.email}</p>
+                   <div className="flex items-center gap-2 mt-1">
+                      <p className="text-slate-500 text-sm">{user.email}</p>
+                      <Badge variant="outline" className="text-[10px] bg-slate-50 text-slate-600 font-medium">Aluno</Badge>
+                   </div>
                    
                    <div className="mt-6 space-y-3">
                      <div className="flex items-center gap-3 text-sm text-slate-600">
                         <GraduationCap className="h-4 w-4 text-slate-400" />
-                        <span>Sistemas de Informação</span>
+                        <span className="font-medium text-slate-700">Sistemas de Informação</span>
                      </div>
                      <div className="flex items-center gap-3 text-sm text-slate-600">
-                        <Briefcase className="h-4 w-4 text-slate-400" />
-                        <span>Matrícula: 202610123</span>
+                        <Fingerprint className="h-4 w-4 text-slate-400" />
+                        <span>RA: <span className="font-medium">202610123</span></span>
                      </div>
-                     <div className="flex items-center gap-3 text-sm text-slate-600">
-                        <Phone className="h-4 w-4 text-slate-400" />
-                        <span>(11) 98765-4321</span>
+                     <div className="flex items-center justify-between text-sm text-slate-600 mt-2">
+                        <div className="flex items-center gap-3">
+                           <Phone className="h-4 w-4 text-slate-400" />
+                           <span>(11) 98765-4321</span>
+                        </div>
                      </div>
                      <div className="flex items-center gap-3 text-sm text-slate-600">
                         <MapPin className="h-4 w-4 text-slate-400" />
                         <span>São Paulo, SP</span>
                      </div>
                    </div>
+                   <div className="mt-6">
+                      <Button variant="outline" className="w-full text-indigo-600 border-indigo-200 hover:bg-indigo-50" onClick={() => setIsEditModalOpen(true)}>
+                         <Edit2 className="w-4 h-4 mr-2" /> Editar Contato
+                      </Button>
+                   </div>
                 </div>
              </div>
           </Card>
-
-          <Card className="border-slate-200">
-             <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-500">Resumo Acadêmico</CardTitle>
-             </CardHeader>
-             <CardContent className="space-y-4">
-                <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-                   <span className="text-slate-600">Média Geral</span>
-                   <span className="font-bold text-indigo-600 text-lg">{stats.averageGrade.toFixed(1)}</span>
-                </div>
-                <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-                   <span className="text-slate-600">Cursos Concluídos</span>
-                   <span className="font-bold text-slate-900">{stats.completedCourses}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                   <span className="text-slate-600">Cursos Ativos</span>
-                   <span className="font-bold text-slate-900">{stats.activeCourses}</span>
-                </div>
-             </CardContent>
-          </Card>
         </div>
 
-        {/* Lado Direito - Form de Edição */}
-        <div className="w-full md:w-2/3">
-          <Card className="border-slate-200">
-            <CardHeader>
-               <CardTitle>Informações Pessoais</CardTitle>
-               <CardDescription>Atualize seus dados de contato e preferências.</CardDescription>
+        {/* Lado Direito - Detalhes */}
+        <div className="w-full lg:w-2/3 flex flex-col gap-6">
+          <Card className="border-slate-200 shadow-sm">
+            <CardHeader className="pb-4 border-b border-slate-100 bg-slate-50/50">
+               <CardTitle className="text-lg flex items-center gap-2"><Briefcase className="w-5 h-5 text-indigo-600" /> Dados de Matrícula</CardTitle>
             </CardHeader>
-            <CardContent>
-               <form className="space-y-6">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                       <Label htmlFor="firstName">Nome Completo</Label>
-                       <Input id="firstName" defaultValue={user.name} />
-                    </div>
-                    <div className="space-y-2">
-                       <Label htmlFor="email">E-mail Acadêmico</Label>
-                       <Input id="email" defaultValue={user.email} disabled className="bg-slate-50" />
-                       <p className="text-xs text-slate-500">O e-mail acadêmico não pode ser alterado.</p>
-                    </div>
-                    <div className="space-y-2">
-                       <Label htmlFor="phone">Telefone</Label>
-                       <Input id="phone" defaultValue="(11) 98765-4321" />
-                    </div>
-                    <div className="space-y-2">
-                       <Label htmlFor="birthDate">Data de Nascimento</Label>
-                       <Input id="birthDate" type="date" defaultValue="1998-05-15" />
-                    </div>
-                 </div>
-                 
-                 <div className="pt-6 border-t border-slate-200">
-                    <h3 className="text-lg font-medium text-slate-900 mb-4">Senha e Segurança</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                         <Label htmlFor="currentPassword">Senha Atual</Label>
-                         <Input id="currentPassword" type="password" />
-                      </div>
-                      <div className="space-y-2">
-                         <Label htmlFor="newPassword">Nova Senha</Label>
-                         <Input id="newPassword" type="password" />
-                      </div>
-                    </div>
-                 </div>
+            <CardContent className="pt-6">
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
+                  <div>
+                     <p className="text-sm text-slate-500 font-medium mb-1">Situação Acadêmica</p>
+                     <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                        <span className="font-bold text-slate-800">Matriculado Regular</span>
+                     </div>
+                  </div>
+                  <div>
+                     <p className="text-sm text-slate-500 font-medium mb-1">Turma Presencial</p>
+                     <p className="font-semibold text-slate-800">SINF-26A / Noturno</p>
+                  </div>
+                  <div>
+                     <p className="text-sm text-slate-500 font-medium mb-1">Polo de Apoio</p>
+                     <p className="font-semibold text-slate-800">Polo Paulista - SP</p>
+                  </div>
+                  <div>
+                     <p className="text-sm text-slate-500 font-medium mb-1">Período Letivo Vigente</p>
+                     <p className="font-semibold text-slate-800">1º Semestre de 2026</p>
+                  </div>
+                  <div>
+                     <p className="text-sm text-slate-500 font-medium mb-1">Data de Ingresso</p>
+                     <p className="font-semibold text-slate-800">05/02/2026</p>
+                  </div>
+                  <div>
+                     <p className="text-sm text-slate-500 font-medium mb-1">Previsão de Conclusão</p>
+                     <p className="font-semibold text-slate-800">Dez/2029</p>
+                  </div>
+               </div>
+            </CardContent>
+          </Card>
 
-                 <div className="pt-6 border-t border-slate-200 flex justify-end gap-3">
-                    <Button variant="outline" type="button">Cancelar</Button>
-                    <Button 
-                      type="button" 
-                      className="bg-indigo-600 hover:bg-indigo-700" 
-                      onClick={() => toast.success("Perfil atualizado com sucesso!")}
-                    >
-                      Salvar Alterações
-                    </Button>
-                 </div>
-               </form>
+          <Card className="border-slate-200 shadow-sm">
+            <CardHeader className="pb-4 border-b border-slate-100 bg-slate-50/50">
+               <CardTitle className="text-lg flex items-center gap-2"><FileText className="w-5 h-5 text-indigo-600" /> Documentação</CardTitle>
+               <CardDescription>Gerencie a entrega dos seus documentos obrigatórios.</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0 px-0">
+               <div className="divide-y divide-slate-100">
+                  {mockDocuments.map((doc) => (
+                     <div key={doc.id} className="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex items-start gap-3">
+                           {doc.status === "VALIDATED" ? (
+                              <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg shrink-0"><CheckCircle2 className="w-5 h-5" /></div>
+                           ) : doc.status === "PENDING" ? (
+                              <div className="p-2 bg-amber-50 text-amber-600 rounded-lg shrink-0"><CalendarDays className="w-5 h-5" /></div>
+                           ) : (
+                              <div className="p-2 bg-rose-50 text-rose-600 rounded-lg shrink-0"><FileX className="w-5 h-5" /></div>
+                           )}
+                           <div>
+                              <p className="font-medium text-slate-900">{doc.name}</p>
+                              {doc.status === "VALIDATED" && <p className="text-xs text-emerald-600 font-medium mt-0.5">Validado pela secretaria</p>}
+                              {doc.status === "PENDING" && <p className="text-xs text-amber-600 font-medium mt-0.5">Em análise</p>}
+                              {doc.status === "MISSING" && <p className="text-xs text-rose-600 font-medium mt-0.5">Pendente de envio</p>}
+                           </div>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-2">
+                           {doc.status === "VALIDATED" && (
+                              <Button variant="ghost" size="sm" className="text-slate-500"><Download className="w-4 h-4 mr-2" /> Baixar via</Button>
+                           )}
+                           {doc.status === "MISSING" && (
+                              <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">Enviar Documento</Button>
+                           )}
+                           {doc.status === "PENDING" && (
+                              <Button variant="outline" size="sm" disabled>Aguardando</Button>
+                           )}
+                        </div>
+                     </div>
+                  ))}
+               </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+         <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+               <DialogTitle>Editar Informações</DialogTitle>
+               <DialogDescription>
+                  Atualize seus dados de contato básicos. Para alterar dados cadastrais oficiais (Nome, Documentos), abra um chamado na secretaria.
+               </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+               <div className="grid gap-2">
+                  <Label htmlFor="phone">Celular</Label>
+                  <Input id="phone" defaultValue="(11) 98765-4321" />
+               </div>
+               <div className="grid gap-2">
+                  <Label htmlFor="address">Endereço Residencial</Label>
+                  <Input id="address" defaultValue="Rua Exemplo, 123" />
+               </div>
+               <div className="grid gap-2">
+                  <Label htmlFor="zipcode">CEP</Label>
+                  <Input id="zipcode" defaultValue="01000-000" />
+               </div>
+               <div className="grid gap-2">
+                  <Label htmlFor="city">Cidade / Estado</Label>
+                  <div className="flex gap-2">
+                     <Input id="city" defaultValue="São Paulo" className="flex-1" />
+                     <Input id="state" defaultValue="SP" className="w-20 text-center" />
+                  </div>
+               </div>
+            </div>
+            <DialogFooter>
+               <DialogClose asChild>
+                  <Button variant="outline">Cancelar</Button>
+               </DialogClose>
+               <Button onClick={handleSaveContact} disabled={isSaving} className="bg-indigo-600 hover:bg-indigo-700">
+                  {isSaving ? "Salvando..." : "Salvar Alterações"}
+               </Button>
+            </DialogFooter>
+         </DialogContent>
+      </Dialog>
     </div>
   );
 }

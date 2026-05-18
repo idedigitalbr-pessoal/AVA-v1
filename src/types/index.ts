@@ -1,3 +1,5 @@
+export * from './student';
+
 export type Role = 'SUPER_ADMIN' | 'ADMIN' | 'SECRETARIA' | 'COORDENADOR' | 'PROFESSOR' | 'ALUNO' | 'FINANCEIRO' | 'SUPORTE';
 
 export type Permission = 

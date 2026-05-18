@@ -112,6 +112,7 @@ export function StudentTopbar({
           
           <div className="w-10 h-10 rounded-full bg-indigo-100 border-2 border-white shadow-sm overflow-hidden flex items-center justify-center font-bold text-indigo-700 shrink-0">
             {student.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img src={student.avatarUrl} alt={student.name} className="w-full h-full object-cover" />
             ) : (
               initials

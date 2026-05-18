@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MOCK_STEPS, StudyStep } from "./types";
+import { StudyStep } from "./types";
+import { mockStudySteps as MOCK_STEPS } from "@/mocks/student.mock";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

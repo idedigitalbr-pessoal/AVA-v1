@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MOCK_AVAILABLE_SERVICES } from "./types";
+import { mockAvailableServices as MOCK_AVAILABLE_SERVICES } from "@/mocks/student.mock";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { MOCK_NOTICES, Notice, NoticeCategory } from "./types";
+import { mockNotices as MOCK_NOTICES } from "@/mocks/student.mock";
+import { Notice, NoticeCategory } from "./types";
 import { NoticeFilters } from "./NoticeFilters";
 import { NoticeList } from "./NoticeList";
 import { NoticeDetail } from "./NoticeDetail";

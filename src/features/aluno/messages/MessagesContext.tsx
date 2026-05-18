@@ -1,19 +1,29 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { MessageThread, MOCK_THREADS, ThreadMessage } from "./types";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { MessageThread, ThreadMessage } from "./types";
+import { useStudentMessages } from "@/hooks/use-queries";
 
 interface MessagesContextType {
   threads: MessageThread[];
   sendMessage: (threadId: string, text: string) => void;
   markThreadAsRead: (threadId: string) => void;
   getThread: (threadId: string) => MessageThread | undefined;
+  isLoading: boolean;
 }
 
 const MessagesContext = createContext<MessagesContextType | undefined>(undefined);
 
 export function MessagesProvider({ children }: { children: ReactNode }) {
-  const [threads, setThreads] = useState<MessageThread[]>(MOCK_THREADS);
+  const { data: messagesData, isLoading } = useStudentMessages();
+  const [threads, setThreads] = useState<MessageThread[]>([]);
+
+  useEffect(() => {
+    if (messagesData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setThreads(messagesData as any);
+    }
+  }, [messagesData]);
 
   const sendMessage = (threadId: string, text: string) => {
     setThreads(current => current.map(thread => {
@@ -52,7 +62,7 @@ export function MessagesProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <MessagesContext.Provider value={{ threads, sendMessage, markThreadAsRead, getThread }}>
+    <MessagesContext.Provider value={{ threads, sendMessage, markThreadAsRead, getThread, isLoading }}>
       {children}
     </MessagesContext.Provider>
   );

@@ -75,7 +75,7 @@ export function NotificationCard({ notification, onMarkAsRead }: NotificationCar
         
         <h4 className={`text-base font-semibold leading-tight mb-1 ${!notification.isRead ? 'text-slate-900' : 'text-slate-700'}`}>
           {notification.link ? (
-            <Link href={notification.link} className="hover:text-indigo-600 transition-colors">
+            <Link href={notification.link || "#"} className="hover:text-indigo-600 transition-colors">
               {notification.title}
             </Link>
           ) : (

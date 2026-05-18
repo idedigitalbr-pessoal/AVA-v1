@@ -59,7 +59,7 @@ export function CampaignModal({ campaign }: { campaign: Campaign }) {
                 Fechar
               </Button>
               <Link 
-                href={campaign.actionUrl} 
+                href={campaign.actionUrl || "#"} 
                 onClick={handleDismiss}
                 className="inline-flex h-8 items-center justify-center rounded-lg bg-indigo-600 px-2.5 text-sm font-medium text-white hover:bg-indigo-700 focus-visible:ring-3 focus-visible:ring-ring/50"
               >

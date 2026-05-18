@@ -6,8 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MOCK_EXAMS, ExamStatus, Exam } from "./types";
+import { ExamStatus, Exam } from "./types";
 import { Laptop, Calendar, CheckCircle2, Clock, XCircle, FileText, Lock, PlayCircle, Eye } from "lucide-react";
+import { useStudentExams } from "@/hooks/use-queries";
 
 export function getExamStatusConfig(status: ExamStatus) {
   switch (status) {
@@ -103,11 +104,16 @@ function ExamCard({ exam }: { exam: Exam }) {
 }
 
 export function ExamDashboard() {
+  const { data: examsData, isLoading } = useStudentExams();
   const [activeTab, setActiveTab] = useState("pendentes");
 
-  const pendingExams = MOCK_EXAMS.filter(e => e.status === "DISPONIVEL" || e.status === "AGENDADA" || e.status === "EM_ANDAMENTO");
-  const completedExams = MOCK_EXAMS.filter(e => e.status === "CONCLUIDA");
-  const otherExams = MOCK_EXAMS.filter(e => e.status === "EXPIRADA" || e.status === "BLOQUEADA");
+  const exams = examsData || [];
+
+  const pendingExams = exams.filter((e: any) => e.status === "DISPONIVEL" || e.status === "AGENDADA" || e.status === "EM_ANDAMENTO");
+  const completedExams = exams.filter((e: any) => e.status === "CONCLUIDA");
+  const otherExams = exams.filter((e: any) => e.status === "EXPIRADA" || e.status === "BLOQUEADA");
+
+  if (isLoading) return <div className="p-8 text-center text-slate-500">Carregando provas...</div>;
 
   return (
     <div className="space-y-6">
