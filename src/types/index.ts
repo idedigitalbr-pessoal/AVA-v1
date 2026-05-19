@@ -1,4 +1,9 @@
 export * from './student';
+export * from './public-site';
+export * from './public-course';
+export * from './public-blog';
+export * from './lead';
+export * from './pre-enrollment';
 
 export type Role = 'SUPER_ADMIN' | 'ADMIN' | 'SECRETARIA' | 'COORDENADOR' | 'PROFESSOR' | 'ALUNO' | 'FINANCEIRO' | 'SUPORTE';
 

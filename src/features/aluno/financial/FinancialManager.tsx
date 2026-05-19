@@ -58,6 +58,12 @@ export function FinancialManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
+  const [now, setNow] = useState(0);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNow(Date.now());
+  }, []);
 
   const openDetails = async (id: string) => {
     // using mock data already in memory, or use service
@@ -110,12 +116,6 @@ export function FinancialManager() {
   }
 
   const { invoices = [], status, nextBill } = financialData;
-
-  // Estado local para Date.now() para evitar re-render puro com impure function
-  const [now, setNow] = useState(0);
-  useEffect(() => {
-    setNow(Date.now());
-  }, []);
 
   const currentMonthInvoice = invoices.find(i => i.status === "PENDING" && new Date(i.dueDate).getTime() >= now && now !== 0);
   const openInvoices = invoices.filter(i => i.status === "PENDING" || i.status === "LATE");

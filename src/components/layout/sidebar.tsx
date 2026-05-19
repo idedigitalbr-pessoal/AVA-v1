@@ -55,6 +55,8 @@ const getLinks = (role: SidebarRole): SidebarLink[] => {
     case "SECRETARIA":
       return [
         { href: "/admin", label: "Dashboard", icon: LayoutDashboard, permission: 'VIEW_ADMIN_DASHBOARD' },
+        { href: "/admin/leads", label: "Leads (CRM)", icon: Book, permission: 'MANAGE_USERS' },
+        { href: "/admin/pre-matriculas", label: "Pré-matrículas", icon: Book, permission: 'MANAGE_USERS' },
         { href: "/admin/alunos", label: "Alunos", icon: GraduationCap, permission: 'MANAGE_USERS' },
         { href: "/admin/professores", label: "Professores", icon: Users, permission: 'MANAGE_USERS' },
         { href: "/admin/cursos", label: "Cursos", icon: Book, permission: 'MANAGE_COURSES' },

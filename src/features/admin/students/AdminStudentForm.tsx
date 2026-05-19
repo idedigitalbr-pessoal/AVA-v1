@@ -111,9 +111,9 @@ export function AdminStudentForm({ isEdit, studentId }: AdminStudentFormProps) {
     }
   };
 
-  if (loading) return <AdminLoadingState text="Carregando formulário..." />;
-
   const currentCourse = useWatch({ control: form.control, name: 'courseId' });
+
+  if (loading) return <AdminLoadingState text="Carregando formulário..." />;
 
   return (
     <div className="space-y-6">

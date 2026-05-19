@@ -85,6 +85,59 @@ export const ENDPOINTS = {
   SETTINGS: {
     BASE: '/settings',
   },
+  PUBLIC_SITE: {
+    SETTINGS: '/public/site/settings',
+    MENU: '/public/site/menu',
+    BANNERS: '/public/site/banners',
+    FAQS: '/public/site/faqs',
+    TESTIMONIALS: '/public/site/testimonials',
+  },
+  PUBLIC_COURSES: {
+    LIST: '/public/courses',
+    DETAIL: (slug: string) => `/public/courses/${slug}`,
+    FEATURED: '/public/courses/featured',
+  },
+  PUBLIC_BLOG: {
+    POSTS: '/public/blog/posts',
+    POST_DETAIL: (slug: string) => `/public/blog/posts/${slug}`,
+    CATEGORIES: '/public/blog/categories',
+  },
+  PUBLIC_LEADS: {
+    SUBMIT: '/public/leads/submit',
+    FORMS: (id: string) => `/public/leads/forms/${id}`,
+  },
+  PUBLIC_PRE_ENROLLMENTS: {
+    START: '/public/pre-enrollments/start',
+    UPDATE: (id: string) => `/public/pre-enrollments/${id}`,
+    UPLOAD_DOC: (id: string, docId: string) => `/public/pre-enrollments/${id}/documents/${docId}`,
+    STATUS: (id: string) => `/public/pre-enrollments/${id}/status`,
+  },
+  ADMIN_SITE: {
+    SETTINGS: '/admin/site/settings',
+    MENU: '/admin/site/menu',
+    BANNERS: '/admin/site/banners',
+    FAQS: '/admin/site/faqs',
+    TESTIMONIALS: '/admin/site/testimonials',
+  },
+  ADMIN_LEADS: {
+    LIST: '/admin/leads',
+    DETAIL: (id: string) => `/admin/leads/${id}`,
+    UPDATE_STAGE: (id: string) => `/admin/leads/${id}/stage`,
+    ADD_NOTE: (id: string) => `/admin/leads/${id}/notes`,
+    TASKS: (id: string) => `/admin/leads/${id}/tasks`,
+    FORMS: '/admin/leads/forms',
+  },
+  ADMIN_PRE_ENROLLMENTS: {
+    LIST: '/admin/pre-enrollments',
+    DETAIL: (id: string) => `/admin/pre-enrollments/${id}`,
+    REVIEW_DOC: (id: string, docId: string) => `/admin/pre-enrollments/${id}/documents/${docId}/review`,
+    APPROVE: (id: string) => `/admin/pre-enrollments/${id}/approve`,
+    REJECT: (id: string) => `/admin/pre-enrollments/${id}/reject`,
+  },
+  ADMIN_CAMPAIGNS: {
+    LIST: '/admin/campaigns',
+    DETAIL: (id: string) => `/admin/campaigns/${id}`,
+  },
   STUDENT_AREA: {
     DASHBOARD: '/student/dashboard',
     SUMMARY: '/student/dashboard/summary',
